@@ -19,9 +19,7 @@ self.addEventListener('install', ev => {
     );
 });
 
-// Only needed during development, forces 
-// new version of service worker to take over page immediately 
-// if an old one is still running
+
 self.addEventListener('activate', ev => {
     console.log('Claiming control...');
     return self.clients.claim();

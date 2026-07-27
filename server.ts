@@ -6,7 +6,7 @@ import { Tile } from 'locar-tiler';
 import db from './db';
 
 import MapModel from './models/map';
-import type { LayerKey } from './types/hikar';
+import type { LayerKey } from './types';
 
 const PORT = 3001;
 

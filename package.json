@@ -1,13 +1,15 @@
 {
   "type": "module",
   "dependencies": {
+    "@turf/bearing": "^7.3.5",
     "@types/express": "^5.0.6",
     "@types/pg": "^8.20.0",
     "@types/serviceworker": "^0.0.200",
     "@types/three": "^0.183.1",
     "express": "^5.2.1",
+    "geojson-path-finder-nw": "file:../geojson-path-finder/geojson-path-finder-nw-2.1.0+nw.tgz",
     "locar": "^0.2.3",
-    "locar-tiler": "^0.7.2",
+    "locar-tiler": "^0.9.0",
     "pg": "^8.20.0",
     "troika-three-text": "^0.52.4",
     "vite-express": "^0.22.1"

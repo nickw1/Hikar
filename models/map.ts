@@ -1,7 +1,7 @@
 import { Tile, EastNorth, SphMercProjection } from 'locar-tiler';
-import type { FeatureCollection, Feature } from 'locar-tiler';
+import type { FeatureCollection, Feature } from 'geojson';
 import { Pool } from 'pg';
-import type { LayerKey, LayerData } from '../types/hikar';
+import type { LayerKey, LayerData } from '../types';
 
 
 
@@ -41,7 +41,7 @@ export default class MapModel {
     }
 
     async doGetMap(bl: EastNorth, tr: EastNorth, layers: LayerKey[], outProj: string | null = null) : Promise<FeatureCollection> {    
-        const json = { "type": "FeatureCollection", "features": new Array<Feature>() };
+        const json = { "type": "FeatureCollection", "features": new Array<Feature>() } as FeatureCollection;
         let geomCol = "", sql = "", idCol = "";
         for(const strLayer of layers.filter( lyr => this.layerData[lyr] !== undefined ))  {
             const layer = strLayer ; 
@@ -63,8 +63,8 @@ export default class MapModel {
                         return {
                             type: 'Feature',
                             geometry: JSON.parse(row.geom),
-                            properties: props
-                        };
+                            properties: props 
+                        } as Feature;
                     } ).filter ( f => ['Point', 'LineString', 'MultiLineString','Polygon','MultiPolygon'].indexOf(f.geometry.type) >= 0); // do not send back anything the client cannot deal with
                     json.features.push(...features);
                 } else {
