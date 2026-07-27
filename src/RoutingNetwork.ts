@@ -5,8 +5,9 @@
 //
 // This is based on the original PanoNetworkMgr from OpenTrailView, but has
 // become quite heavily modified for optimal use in Hikar.
-//
-// Requires bugfixed/enhanced geojson-path-finder; bundled with Hikar. 
+
+// Requires modified geojson-path-finder; clone from https://github.com/nickw1/geojson-path-finder.
+// This requirement may be dropped in favour of vanilla geojson-path-finder in future.
 
 import { LocAR } from 'locar';
 import PathFinder from 'geojson-path-finder-nw';
