@@ -13,3 +13,7 @@ The project is intended also to be used as a test for future ideas and developme
 Renders paths, roads and common POIs with simple models. 
 
 The virtual signpost functionality, present in the AR.js/A-Frame version, has been largely implemented backend but is not rendered frontend yet. This currently requires a modified version of `geojson-path-finder`; clone from https://github.com/nickw1/geojson-path-finder. This requirement may be dropped in favour of vanilla geojson-path-finder in future.
+
+## Contact details for Hikar project
+
+If you have any questions on any aspect of this project, or want to suggest ideas and improvements, please email: hikaraugmentedreality@gmail.com
