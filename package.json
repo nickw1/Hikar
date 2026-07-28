@@ -1,4 +1,5 @@
 {
+  "name": "Hikar",
   "type": "module",
   "dependencies": {
     "@turf/bearing": "^7.3.5",
