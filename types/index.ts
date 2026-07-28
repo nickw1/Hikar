@@ -90,14 +90,12 @@ export type RoutableWay = Feature<LineString> & { boundingBox: BoundingBox | nul
 export type FoundVertex = { coords: number[], distance: number, edges: { [key: string]: { coords: Position[], properties: GeoJsonProperties } } };
 
 export interface ReducedEdgeData {
-
     highway: string,
     foot: string,
     designation: string,
     isAccessiblePath: boolean,
-    v1: string,
-    v2: string
-
+    v1?: string,
+    v2?: string
 }
 
 export interface Destination {

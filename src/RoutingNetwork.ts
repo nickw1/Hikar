@@ -29,7 +29,7 @@ export default class RoutingNetwork {
     minPathProportionOverride!: number;
     ways: FeatureCollection<LineString>;
 
-    constructor(options: RoutingNetworkOptions = { }) {
+    constructor(options: RoutingNetworkOptions = {}) {
         this.vDet = null;
         this.pathFinder = null;
         this.setOptions(options);
@@ -70,9 +70,7 @@ export default class RoutingNetwork {
                         highway: props.highway,
                         foot: props.foot,
                         designation: props.designation,
-                        isAccessiblePath: RoutingNetwork._isAccessiblePath(props),
-                        v1: "",
-                        v2: ""
+                        isAccessiblePath: RoutingNetwork._isAccessiblePath(props)
                     };
                 }
             });
@@ -121,7 +119,7 @@ export default class RoutingNetwork {
 
         console.log(`Have ${targetPois.features.length} POIs to route to`);
         (targetPois.features as RoutablePoi[]).forEach(targetPoi => {
-           
+
             if (targetPoi.properties?.name !== undefined && ([
                 'pub',
                 'cafe',
@@ -145,7 +143,6 @@ export default class RoutingNetwork {
                 snappedEndNode.geometry.coordinates = options.snapPois ? this.vDet!.snapToVertex(targetPoi.geometry.coordinates, this.poiDistThreshold, false) : targetPoi.geometry.coordinates;
 
                 const route = this.calcPath(snappedStartNode, snappedEndNode);
-
                 if (route != null && route.edgeDatas !== undefined && route.edgeDatas.length >= 1 && route.path.length >= 2 && route.edgeDatas[0]!.isAccessiblePath) {
                     // calculate the real distance of the path (weight is now
                     // adjusted - see above)
@@ -169,12 +166,8 @@ export default class RoutingNetwork {
                     // routings to POIs.
 
                     const pathDist = route.edgeDatas.reduce((acc, value, index, arr) => {
-                        if (value && this.vDet) {
-
-
-                            const v1: string = value.v1;
-                            const v2: string = value.v2;
-                            const w = this.vDet.findEdgeWeightByKeys(v1, v2);
+                        if (value && this.vDet && value.v1 && value.v2) {
+                            const w = this.vDet.findEdgeWeightByKeys(value.v1, value.v2);
                             if (w) {
                                 const realDist = w / (value.isAccessiblePath ? 1 : this.roadCost);
                                 return [acc[0] + realDist, acc[1] + (value.isAccessiblePath ? realDist : 0)];
@@ -241,13 +234,13 @@ export default class RoutingNetwork {
     insertIntoNetwork(pois: FeatureCollection<Point>) {
         const newFeatures: RoutableWay[] = [];
         let k = 0, z = 0;
-      
+
         pois.features.forEach(p => {
             const poi = p as RoutablePoi;
             console.log(`insertIntoNetwork(): poi name = ${p.properties!.name}`);
             (this.ways.features as RoutableWay[]).filter(way => way.boundingBox!.contains(poi.geometry.coordinates)).forEach(way => {
 
-                let lowestDist : HaversineDistToLineResult = { distance: Number.MAX_VALUE, proportion: 0, intersection: null }, idx = -1, curDist;
+                let lowestDist: HaversineDistToLineResult = { distance: Number.MAX_VALUE, proportion: 0, intersection: null }, idx = -1, curDist;
                 for (let j = 0; j < way.geometry.coordinates.length - 1; j++) {
                     curDist = RoutingNetwork.haversineDistToLine(
                         poi.geometry.coordinates,
@@ -287,7 +280,7 @@ export default class RoutingNetwork {
 
                         }
                     }
-                    if(poi.split !== null) {
+                    if (poi.split !== null) {
                         console.log(`Split: ${poi.split.distance} ${poi.split.idx} ${poi.split.intersection}`);
                     }
                 }
