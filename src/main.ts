@@ -9,6 +9,7 @@ import { RoutableWay, RoutablePoi, Signpost } from '../types';
 import BoundingBox from './BoundingBox';
 import RoutingNetwork from './RoutingNetwork';
 import SignpostManager from './SignpostManager';
+import SignpostRenderer from './SignpostRenderer';
 
 const app = new App({ cameraOptions: { hFov: 80, near: 0.1, far: 4000 } });
 
@@ -57,6 +58,11 @@ const signpostManager = new SignpostManager({
   routingNetwork
 });
 
+const signpostRenderer = new SignpostRenderer(
+  '/assets/nick_metal_sign_post.obj',
+  '/assets/nick_metal_sign_post_arm.obj',
+  '/assets/signpost_textures.png'
+);
 
 try {
   locar = await app.start();
@@ -75,6 +81,8 @@ try {
   locar.on("gpserror", (ev: GeolocationPositionError) => {
     alert(ev.code);
   });
+
+  await signpostRenderer.loadAssets();
 } catch (e: any) {
   alert(e);
 }
@@ -276,8 +284,12 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
 
     const newSignpost = signpostManager.updatePos(ev.position.coords);
     if (newSignpost !== null) {
-      // TODO render in 3D world
+    
       printSignpost(newSignpost);
+      const signpostModel = await signpostRenderer.renderSignpost(newSignpost);
+      if (signpostModel) {
+        locar?.add(signpostModel, newSignpost.position[0], newSignpost.position[1], newSignpost.position[2]);
+      }
     }
   }
   showLocation(lonLat);
