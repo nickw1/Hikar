@@ -1,4 +1,4 @@
-# hikar-locar
+# Hikar (LocAR.js edition)
 
 [Hikar](https://hikar.org) is a project to develop an augmented-reality navigation app for walkers. It was originally implemented as a [native Android app](https://gitlab.com/nickw1/Hikar) and then as a web app using "classic" location-based AR.js and A-Frame (see [old repo](https://github.com/nickw1/hikar.js)).
 
@@ -10,9 +10,9 @@ The project is intended also to be used as a test for future ideas and developme
 
 ## Current status
 
-Renders paths, roads and common POIs with simple models. 
+Renders paths, roads and common POIs with simple models as well as virtual signposts.
 
-The virtual signpost functionality, present in the AR.js/A-Frame version, has been largely implemented backend but is not rendered frontend yet. This currently requires a modified version of `geojson-path-finder` which is installed from npm in the normal way.
+The virtual signpost functionality currently requires a modified version of `geojson-path-finder` which is installed from npm in the normal way.
 
 ## Contact details for Hikar project
 
