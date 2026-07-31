@@ -16,7 +16,7 @@ import { point as turfPoint } from '@turf/helpers';
 import turfBearing from '@turf/bearing';
 import { RoutablePoi, RoutableWay, RoutingNetworkOptions, RouteOptions, FoundVertex, ReducedEdgeData, Destination, Split, HaversineDistToLineResult } from '../types';
 import type { Point, FeatureCollection, GeoJsonProperties, LineString, Position, Feature } from 'geojson';
-import BoundingBox from './BoundingBox';
+
 
 export default class RoutingNetwork {
 
@@ -233,7 +233,7 @@ export default class RoutingNetwork {
 
     insertIntoNetwork(pois: FeatureCollection<Point>) {
         const newFeatures: RoutableWay[] = [];
-        let k = 0, z = 0;
+
 
         pois.features.forEach(p => {
             const poi = p as RoutablePoi;
@@ -304,7 +304,7 @@ export default class RoutingNetwork {
             });
         });
 
-        // now we need to loop through the ways again to actually split thm
+        // now we need to loop through the ways again to actually split them
         (this.ways.features as RoutableWay[]).forEach((way, splitWayIdx) => {
             let splits = allSplits[way.properties!.hikar_id];
             // this was originally in the ways loop
@@ -318,8 +318,6 @@ export default class RoutingNetwork {
                 while (i < way.geometry.coordinates.length) {
                     newWay.geometry.coordinates.push([way.geometry.coordinates[i][0], way.geometry.coordinates[i][1]]);
                     while (splitIdx < splits.length && Math.floor(splits[splitIdx].idx) == i) {
-
-                        //newWay.geometry.coordinates.push([splits[splitIdx].poi.lon, splits[splitIdx].poi.lat, splits[splitIdx].poi.id]);
                         newWay.geometry.coordinates.push([splits[splitIdx].intersection[0], splits[splitIdx].intersection[1], splits[splitIdx].poi_id]);
                         splitIdx++;
                     }
