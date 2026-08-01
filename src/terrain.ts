@@ -32,7 +32,7 @@ export default class TerrainGenerator {
         }
 
 
-        const terrainMaterial = new THREE.MeshStandardMaterial({ color: 0x008000, transparent: true, opacity: 0.2 });
+        const terrainMaterial = new THREE.MeshStandardMaterial({ color: 0x008000 });
         return new THREE.Mesh(terrain, terrainMaterial);
 
     }

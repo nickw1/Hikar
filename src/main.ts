@@ -158,11 +158,6 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
     for (let dataTile of newTiles) {
       const tileKey = dataTile.tile.getIndex();
 
-      const newDem = demTiler?.dataTiles.get(tileKey)?.data;
-      if (newDem) {
-        const terrainGenerator = new TerrainGenerator(newDem);
-        locar!.scene.add(terrainGenerator.genTerrain(locar!));
-      }
 
       for (let feature of dataTile.data.features) {
 
@@ -208,11 +203,13 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
                 text.font = 'https://fonts.gstatic.com/s/roboto/v18/KFOmCnqEu92Fr1Mu4mxM.woff';
                 text.color = 0xffffff;
                 text.sync();
+
                 object.add(text);
               }
 
 
               const coords = (feature.geometry as Point).coordinates;
+              object.renderOrder = 1;
               locar!.add(object, coords[0], coords[1], coords[2] || 0);
               indexedFeatures.set(feature.properties.hikar_id, feature);
 
@@ -237,7 +234,8 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
                 lineMaterial = handleLineMaterial(hwy);
                 const lineCoords = (feature.geometry as LineString).coordinates.filter(coords => coords[2] !== null);
                 if (lineCoords.length >= 2) {
-                  locar!.addGeoLine(lineCoords as [number, number, number?][], lineMaterial, width) // TODO on locar : change param to be possibly a GeoJSON Position type
+                  const line = locar!.addGeoLine(lineCoords as [number, number, number?][], lineMaterial, width) // TODO on locar : change param to be possibly a GeoJSON Position type
+                  line.renderOrder = 0;
                   indexedFeatures.set(feature.properties.hikar_id, feature);
 
 
@@ -266,7 +264,8 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
                   };
 
                   if (lineCoords.length >= 2) {
-                    locar!.addGeoLine(lineCoords as [number, number, number?][], lineMaterial, width)
+                    const line = locar!.addGeoLine(lineCoords as [number, number, number?][], lineMaterial, width)
+                    line.renderOrder = 0;
                     indexedFeatures.set(splitWay.properties!.hikar_id, feature);
                     allWaysForRouting.features.push(splitWay);
                   }
@@ -274,6 +273,14 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
               }
           }
         }
+      }
+      const newDem = demTiler?.dataTiles.get(tileKey)?.data;
+      if (newDem) {
+        const terrainGenerator = new TerrainGenerator(newDem);
+        const terrain = terrainGenerator.genTerrain(locar!);
+        terrain.renderOrder = 2;
+        (terrain.material as THREE.MeshStandardMaterial).colorWrite = false;
+        locar!.scene.add(terrain);
       }
     }
     if (newTiles.length > 0) {
@@ -284,10 +291,12 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
 
     const newSignpost = signpostManager.updatePos(ev.position.coords);
     if (newSignpost !== null) {
-    
+
       printSignpost(newSignpost);
       const signpostModel = await signpostRenderer.renderSignpost(newSignpost);
+     
       if (signpostModel) {
+        signpostModel.renderOrder = 1;
         locar?.add(signpostModel, newSignpost.position[0], newSignpost.position[1], newSignpost.position[2]);
       }
     }
