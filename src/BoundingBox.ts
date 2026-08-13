@@ -33,7 +33,7 @@ export default class BoundingBox {
     }
 
     static fromCoords(coords: Position[]) {
-        const bbox = new BoundingBox(-181, -91, 181, 91);
+        const bbox = new BoundingBox(181, 91, -181, -91);
         coords.forEach(p => {
 
             if (p[0] < bbox.bottomLeft.longitude) {
