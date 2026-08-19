@@ -232,7 +232,7 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
               feature.properties.hikar_id = `${dataTile.tile.toString()}:w${props.osm_id}`;
               if (accessibleHighway) {
                 lineMaterial = handleLineMaterial(hwy);
-                const lineCoords = (feature.geometry as LineString).coordinates.filter(coords => coords[2] !== null);
+                const lineCoords = (feature.geometry as LineString).coordinates.filter(coords => coords[2] !== null && coords[2] > Number.NEGATIVE_INFINITY);
                 if (lineCoords.length >= 2) {
                   const line = locar!.addGeoLine(lineCoords as [number, number, number?][], lineMaterial, width) // TODO on locar : change param to be possibly a GeoJSON Position type
                   line.renderOrder = 0;
@@ -250,21 +250,22 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
               if (accessibleHighway) {
                 const id = `${dataTile.tile.toString()}:w${props.osm_id}`;
                 lineMaterial = handleLineMaterial(hwy);
-                const mlsCoords = (feature.geometry as MultiLineString).coordinates.filter(coords => coords[2] !== null);
+                const mlsCoords = (feature.geometry as MultiLineString).coordinates;
                 let i = 0;
                 for (let lineCoords of mlsCoords) {
+                  const filteredCoords = lineCoords.filter(coords => coords[2] !== null && coords[2] > Number.NEGATIVE_INFINITY);
                   const splitWay: RoutableWay = {
                     type: "Feature",
                     geometry: {
                       type: "LineString",
-                      coordinates: lineCoords
+                      coordinates: filteredCoords
                     },
                     properties: { ...feature.properties, hikar_id: `${id}#${i++}` },
-                    boundingBox: BoundingBox.fromCoords(lineCoords)
+                    boundingBox: BoundingBox.fromCoords(filteredCoords)
                   };
 
-                  if (lineCoords.length >= 2) {
-                    const line = locar!.addGeoLine(lineCoords as [number, number, number?][], lineMaterial, width)
+                  if (filteredCoords.length >= 2) {
+                    const line = locar!.addGeoLine(filteredCoords as [number, number, number?][], lineMaterial, width)
                     line.renderOrder = 0;
                     indexedFeatures.set(splitWay.properties!.hikar_id, feature);
                     allWaysForRouting.features.push(splitWay);
