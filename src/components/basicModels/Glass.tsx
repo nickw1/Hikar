@@ -1,6 +1,8 @@
-export default function Glass() {
+import { ModelProps } from '../../../types';
+
+export default function Glass({scale} : ModelProps) {
     return(
-        <group scale={2}>
+        <group scale={scale}>
             <mesh position={[0, 1.5, 0]} >
                 <cylinderGeometry args={[1, 1, 3]}/>
                 <meshStandardMaterial color="#cc6600" transparent opacity={0.5} />

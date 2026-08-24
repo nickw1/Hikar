@@ -1,6 +1,8 @@
-export default function Cup() {
+import { ModelProps } from '../../../types';
+
+export default function Cup({scale} : ModelProps) {
     return(
-        <group scale={1}>
+        <group scale={scale}>
             <mesh position={[0, 2.7, 0]} rotation={[0, 0,  Math.PI]}>
                 <sphereGeometry args={[3, 32, 16, 0, Math.PI*2, 0, Math.PI /2]} />
                 <meshBasicMaterial color="#8080ff" />

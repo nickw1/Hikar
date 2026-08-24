@@ -15,7 +15,7 @@ export default function App() {
     const [status, setStatus] = useState("Waiting for GPS...");
 
     useEffect(() => {
-        const demTiler = new LT.DemTiler("/dem/{z}/{x}/{y}.png"), jsonTiler = new LT.GeoJsonTiler("/map/{z}/{x}/{y}.json?layers=poi,ways&outProj=4326");
+        const demTiler = new LT.DemTiler("/dem/{z}/{x}/{y}.png"), jsonTiler = new LT.GeoJsonTiler("/map/{z}/{x}/{y}.json?outProj=4326");
         demApplier.current = new LT.DemApplier(demTiler, jsonTiler);
     }, []);
 
@@ -69,7 +69,7 @@ export default function App() {
                             ),
                             altitude: poiData.geometry.coordinates[2] as number ?? 0,
                             name: poiData.properties.name || "",
-                            type: poiData.properties.place || poiData.properties.natural || poiData.properties.amenity,
+                            type: poiData.properties.building !== undefined ? "building" : poiData.properties.place || poiData.properties.natural || poiData.properties.amenity,
                             id: poiData.properties.osm_id
                         });
                         break;

@@ -104,3 +104,8 @@ export interface Destination {
     path: Position[],
     properties: GeoJsonProperties
 }
+
+
+export interface ModelProps {
+    scale: number;
+}

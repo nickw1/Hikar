@@ -1,9 +1,11 @@
-export default function Marker() {
+import { ModelProps } from '../../../types';
+
+export default function Marker({scale} : ModelProps) {
 
    const colour = "red";
   
    return (
-        <group scale={2}>
+        <group scale={scale}>
             <mesh rotation={[Math.PI, 0, 0]} position={[0, 1.5, 0]}>
                 <coneGeometry args={[1, 3, 64]} />
                 <meshStandardMaterial transparent={true} color={colour} opacity={0.7} />
