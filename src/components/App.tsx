@@ -4,8 +4,9 @@ import { Canvas } from '@react-three/fiber';
 import * as LT from 'locar-tiler';
 import GeoDataRenderer from './GeoDataRenderer';
 import LoadingMsg from './LoadingMsg';
-import { FeatureCollection, LineString, Position } from 'geojson';
+import { FeatureCollection, LineString, Position, Point, Feature, MultiLineString } from 'geojson';
 import { useStore } from '../../hooks/store';
+import { Way } from '../../types/hikar';
 
 export default function App() {
 
@@ -58,38 +59,68 @@ export default function App() {
         const elev = demApplier.current.demTiler.getElevationFromLonLat(lonLat) ?? 0;
         console.log(`elev: ${elev}`);
         setElev(elev);
+        const poisForRouting = {
+            "type": "FeatureCollection",
+            "features": new Array<Feature<Point>>()
+        }, waysForRouting = {
+            "type": "FeatureCollection",
+            "features": new Array<Feature<LineString>>()
+        };
+
         for (let tile of newData) {
-            for (let poiData of (tile.data as FeatureCollection).features) {
-                switch (poiData.geometry.type) {
+            for (let geoData of (tile.data as FeatureCollection).features) {
+                switch (geoData.geometry.type) {
                     case "Point":
                         addPoi({
                             position: new LT.LonLat(
-                                poiData.geometry.coordinates[0],
-                                poiData.geometry.coordinates[1],
+                                geoData.geometry.coordinates[0],
+                                geoData.geometry.coordinates[1],
                             ),
-                            altitude: poiData.geometry.coordinates[2] as number ?? 0,
-                            name: poiData.properties?.name || "",
-                            type: poiData.properties?.building !== undefined ? "building" : poiData.properties?.place || poiData.properties?.natural || poiData.properties?.amenity,
-                            id: poiData.properties?.osm_id
+                            altitude: geoData.geometry.coordinates[2] as number ?? 0,
+                            name: geoData.properties?.name || "",
+                            type: geoData.properties?.building !== undefined ? "building" : geoData.properties?.place || geoData.properties?.natural || geoData.properties?.amenity,
+                            id: geoData.properties?.osm_id
                         });
+                        poisForRouting.features.push(structuredClone(geoData) as Feature<Point>);
                         break;
                     case "LineString":
-                        if (poiData.properties?.access !== "private") {
+                        if (geoData.properties?.access !== "private") {
                             const way = {
-                                name: poiData.properties?.name || null,
-                                type: poiData.properties?.designation || poiData.properties?.highway,
-                                id: `${tile.tile.x}:${tile.tile.y}:${poiData.properties?.osm_id}`, // ways can duplicate across tiles so include tile x and y in the ID
-                                coordinates: (poiData.geometry as LineString).coordinates.map(
+                                name: geoData.properties?.name || null,
+                                type: geoData.properties?.designation || geoData.properties?.highway,
+                                id: `${tile.tile.x}:${tile.tile.y}:${geoData.properties?.osm_id}`, // ways can duplicate across tiles so include tile x and y in the ID
+                                coordinates: (geoData.geometry as LineString).coordinates.map(
                                     (lonLat: Position) => {
                                         return [lonLat[0], lonLat[1], lonLat[2] || 0];
                                     })
                             };
                             if (way.coordinates.length >= 2) {
                                 addWay(way);
+                                waysForRouting.features.push(structuredClone(geoData) as Feature<LineString>);
                             }
                         }
                         break;
-                    default:
+                    case "MultiLineString":
+                        if (geoData.properties?.access !== "private") {
+                            const id = `${tile.tile.x}:${tile.tile.y}:${geoData.properties?.osm_id}`;
+
+                            const mlsCoords = (geoData.geometry as MultiLineString).coordinates;
+                            let i = 0;
+                            for (let lineCoords of mlsCoords) {
+                                const filteredCoords = lineCoords.filter(coords => coords[2] !== null && coords[2] > Number.NEGATIVE_INFINITY);
+                                const splitWay: Way = {
+                                    name: geoData.properties?.name ?? "",
+                                    type: geoData.properties?.designation || geoData.properties?.highway,
+                                    id: `${id}#${i++}`,
+                                    coordinates: filteredCoords
+                                };
+
+                                if (filteredCoords.length >= 2) {
+                                    addWay(splitWay);
+                                    waysForRouting.features.push(structuredClone(geoData) as Feature<LineString>);
+                                }
+                            }
+                        }
                         break;
                 }
             }
