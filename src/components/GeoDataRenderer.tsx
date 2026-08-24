@@ -61,12 +61,12 @@ export default function GeoDataRenderer() {
                     <GeolocationAnchor key={`p${poi.id}`} latitude={poi.position.latitude} longitude={poi.position.longitude} altitude={poi.altitude}>
                         {element}
                         <Text position={[0, -1, 0]} scale={5} font="https://fonts.gstatic.com/s/roboto/v18/KFOmCnqEu92Fr1Mu4mxM.woff" color="white" anchorX="center" anchorY="middle">{poi.name}</Text>
-                    </GeolocationAnchor> : <></>
+                    </GeolocationAnchor> : ""
                 );
             })}
             {ways.map(way => {
                 return (
-                    <GeoLine key={`w${way.id}`} coordinates={way.coordinates} color={wayColours.current.get(way.type) || 'lightgray'} lineWidth={5} />
+                    <GeoLine key={`w${way.id}`} coordinates={way.coordinates as Array<[number, number, number?]>} color={wayColours.current.get(way.type) || 'lightgray'} lineWidth={5} />
                 )
             })}
         </>

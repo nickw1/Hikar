@@ -1,5 +1,6 @@
 import { LonLat } from 'locar-tiler';
-
+import { Position } from 'geojson';
+ 
 export interface PointGeometry {
     coordinates: [number,number] | [number,number,number];
     type: string;
@@ -48,7 +49,7 @@ export interface Poi extends OsmEntity {
 }
 
 export interface Way extends OsmEntity {
-    coordinates: Array<[number, number, number?]>;
+    coordinates: Array<Position>;
 }
 
 export interface GeoState {

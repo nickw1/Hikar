@@ -4,7 +4,7 @@ import { Canvas } from '@react-three/fiber';
 import * as LT from 'locar-tiler';
 import GeoDataRenderer from './GeoDataRenderer';
 import LoadingMsg from './LoadingMsg';
-import { FeatureCollection, LineGeometry } from '../../types/hikar';
+import { FeatureCollection, LineString, Position } from 'geojson';
 import { useStore } from '../../hooks/store';
 
 export default function App() {
@@ -68,19 +68,19 @@ export default function App() {
                                 poiData.geometry.coordinates[1],
                             ),
                             altitude: poiData.geometry.coordinates[2] as number ?? 0,
-                            name: poiData.properties.name || "",
-                            type: poiData.properties.building !== undefined ? "building" : poiData.properties.place || poiData.properties.natural || poiData.properties.amenity,
-                            id: poiData.properties.osm_id
+                            name: poiData.properties?.name || "",
+                            type: poiData.properties?.building !== undefined ? "building" : poiData.properties?.place || poiData.properties?.natural || poiData.properties?.amenity,
+                            id: poiData.properties?.osm_id
                         });
                         break;
                     case "LineString":
-                        if (poiData.properties.access !== "private") {
+                        if (poiData.properties?.access !== "private") {
                             const way = {
-                                name: poiData.properties.name || null,
-                                type: poiData.properties.designation || poiData.properties.highway,
-                                id: `${tile.tile.x}:${tile.tile.y}:${poiData.properties.osm_id}`, // ways can duplicate across tiles so include tile x and y in the ID
-                                coordinates: (poiData.geometry as LineGeometry).coordinates.map(
-                                    (lonLat: [number, number, number?]): [number, number, number] => {
+                                name: poiData.properties?.name || null,
+                                type: poiData.properties?.designation || poiData.properties?.highway,
+                                id: `${tile.tile.x}:${tile.tile.y}:${poiData.properties?.osm_id}`, // ways can duplicate across tiles so include tile x and y in the ID
+                                coordinates: (poiData.geometry as LineString).coordinates.map(
+                                    (lonLat: Position) => {
                                         return [lonLat[0], lonLat[1], lonLat[2] || 0];
                                     })
                             };
