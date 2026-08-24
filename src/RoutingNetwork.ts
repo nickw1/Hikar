@@ -54,7 +54,7 @@ export default class RoutingNetwork {
     // Update with new geojson before attempting to route
     // POIs in the geojson will be inserted into the network, so that they can be routed to.
     update(ways: FeatureCollection<LineString>, poisToInsert: FeatureCollection<Point>) {
-        this.ways = ways;
+        this.ways.features = [...this.ways.features, ...ways.features];
         if (this.ways.features.length > 0) {
             this.insertIntoNetwork(poisToInsert);
             this.pathFinder = new PathFinder(this.ways, {
