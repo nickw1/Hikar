@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useThree } from '@react-three/fiber';
 import { GeolocationAnchor, GeoLine } from '@omnidotdev/rdk/geolocation';
-import { useStore } from '../../hooks/store';
+import { useStore } from '../hooks/store';
 import Cup from './basicModels/Cup';
 import Glass from './basicModels/Glass';
 import Marker from './basicModels/Marker';

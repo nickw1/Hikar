@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Poi, Way, PoiState } from '../types/hikar';
+import { Poi, Way, PoiState } from '../../types/hikar';
 
 export const useStore = create<PoiState>((set) => ({
     pois: new Array<Poi>(),
