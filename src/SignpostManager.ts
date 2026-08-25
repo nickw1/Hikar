@@ -70,7 +70,7 @@ class SignpostManager extends EventEmitter {
 
                 const curPoint = turfPoint(j.coords);
 
-                let signpost = { position: j.coords, arms: {} as { [bearing: number]: SignpostArm } };
+                let signpost = { jKey, position: j.coords, arms: {} as { [bearing: number]: SignpostArm } };
                 Object.keys(j.edges)
                     .filter(k => j.edges[k].properties?.isAccessiblePath == true)
                     .forEach(k => {

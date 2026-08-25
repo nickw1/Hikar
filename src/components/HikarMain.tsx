@@ -42,6 +42,8 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
         onPosUpdated({ longitude, latitude });
     }, [longitude, latitude]);
 
+    console.log("Rendering HikarMain");
+
     return (
         <GeoDataRenderer />
     );
@@ -170,11 +172,13 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
                     }
                 }
                 updateRoutingNetwork(waysForRouting, poisForRouting);
+                console.log("triggering render of geodata");
                 addGeoData(geodata);
                 setStatus("");
             }
             const signpost = findSignpostAtLonLat(pos);
             if (signpost !== null) {
+                console.log("triggering render of signpost");
                 addSignpost(signpost);
                 printSignpost(signpost);
             }

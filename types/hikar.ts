@@ -54,6 +54,7 @@ export interface RouteOptions {
 }
 
 export interface Signpost {
+    jKey: string,
     position: Position,
     arms: { [bearing: number]: SignpostArm }
 };

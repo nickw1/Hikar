@@ -7,13 +7,13 @@ import Glass from './basicModels/Glass';
 import Marker from './basicModels/Marker';
 import Tree from './basicModels/Tree';
 import Building from './basicModels/Building';
+import RenderedSignpost from './signpost/RenderedSignpost';
 import { Text } from '@react-three/drei';
-
 
 
 export default function GeoDataRenderer() {
 
-
+    console.log("rendering GeoDataRenderer");
     const geodata = useStore((state) => state.geodata);
     const signposts = useStore((state) => state.signposts);
     const wayColours = useRef<Map<string, string>>(new Map());
@@ -69,10 +69,22 @@ export default function GeoDataRenderer() {
                 );
             })}
             {geodata.ways.map(way => (
-                <GeoLine key={`w${way.properties!.hikar_id}`} coordinates={way.geometry.coordinates as Array<[number, number, number]>} color={wayColours.current.get(way.properties!.type) || 'lightgray'} lineWidth={5} />
+                <GeoLine key={`${way.properties!.hikar_id}`} coordinates={way.geometry.coordinates as Array<[number, number, number]>} color={wayColours.current.get(way.properties!.type) || 'lightgray'} lineWidth={5} />
             )
             )}
+            {signposts.map(signpost => (
+                <GeolocationAnchor key={`sp-${signpost.jKey}`} longitude={signpost.position[0]} latitude={signpost.position[1]} altitude={signpost.position[2]}>
+                     <RenderedSignpost signpost={signpost} />
+                </GeolocationAnchor>
+              ))}
+           
         </>
     )
 
 }
+
+/*  {signposts.map(signpost => (
+                <GeolocationAnchor key={`sp-${signpost.jKey}`} longitude={signpost.position[0]} latitude={signpost.position[1]} altitude={signpost.position[2]}>
+                    <RenderedSignpost signpost={signpost} />
+                </GeolocationAnchor>
+            ))}*/

@@ -12,6 +12,7 @@ export default function App() {
 
     const [lonLat, setLonLat] = useState<LonLat>({ longitude: 0, latitude: 0 });
 
+    console.log("rendering App");
     return (
 
         <Suspense fallback={<LoadingMsg message="Rendering data..." />}>
