@@ -1,7 +1,7 @@
 import { Tile, EastNorth, SphMercProjection } from 'locar-tiler';
 import type { FeatureCollection, Feature } from 'geojson';
 import { Pool } from 'pg';
-import type { LayerKey, LayerData } from '../types';
+import type { LayerKey, LayerData } from '../types/hikar';
 
 
 

@@ -1,4 +1,4 @@
-import { ModelProps } from '../../../types';
+import { ModelProps } from '../../../types/hikar';
 
 export default function Marker({scale} : ModelProps) {
 

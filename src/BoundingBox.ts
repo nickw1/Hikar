@@ -1,6 +1,6 @@
 
 import { Position } from 'geojson';
-import { LonLat } from 'locar';
+import type { LonLat } from 'locar';
 
 export default class BoundingBox {
 

@@ -1,26 +1,10 @@
-import { LonLat } from 'locar-tiler';
-import { Position } from 'geojson';
- 
-export interface PointGeometry {
-    coordinates: [number,number] | [number,number,number];
-    type: string;
-}
 
-export interface LineGeometry {
-    coordinates: Array<[number,number] | [number,number,number]>; 
-    type: string;
-}
 
-export interface Feature {
-    type: string;
-    properties: any; 
-    geometry: PointGeometry | LineGeometry;
-}
+import type { Feature, Position, GeoJsonProperties, Point, LineString, FeatureCollection } from 'geojson';
+import BoundingBox from '../src/BoundingBox';
+import RoutingNetwork from '../src/RoutingNetwork';
+import * as THREE from 'three';
 
-export interface FeatureCollection {
-   type: string;
-   features: Array<Feature>;
-}
 
 export interface LayerInfo {
     cols: string;
@@ -43,20 +27,14 @@ export interface OsmEntity {
     type: string;
 }
 
-export interface Poi extends OsmEntity {
-    position: LonLat;
-    altitude: number;
-}
-
-export interface Way extends OsmEntity {
-    coordinates: Array<Position>;
-}
+export type Poi = Feature<Point>;
+export type Way = Feature<LineString>;
 
 export interface GeoState {
     pois: Array<Poi>;
     ways: Array<Way>;
     elev: number;
-    
+
 }
 
 export interface GpsStatus {
@@ -72,4 +50,74 @@ export interface PoiState {
     addPoi: (poi: Poi) => void;
     addWay: (way: Way) => void;
     setElev: (newElev: number) => void;
+}
+
+
+export interface RoutingNetworkOptions {
+    poiDistThreshold?: number,
+    roadCost?: number,
+    minPathProportion?: number,
+    minPathProportionOverride?: number,
+    juncDistThreshold?: number,
+}
+
+export interface SignpostManagerOptions {
+    routingNetwork: RoutingNetwork,
+    juncDetectDistChange?: number,
+}
+
+export interface RouteOptions {
+    snapToJunction: boolean;
+    snapPois: boolean;
+}
+
+export interface Signpost {
+    position: Position,
+    arms: { [bearing: number]: SignpostArm }
+};
+
+export interface SignpostArm {
+    properties: GeoJsonProperties,
+    destinations: Destination[];
+}
+
+export type Split = { distance: number, idx: number, intersection: Position, way: RoutableWay, poi_id: number };
+export type HaversineDistToLineResult = { distance: number, proportion: number, intersection: Position | null };
+export type RoutablePoi = Feature<Point> & { dist: number, bearing: number, path: Position[], weight: number, split: Split | null };
+export type RoutableWay = Feature<LineString> & { boundingBox: BoundingBox | null }
+export type FoundVertex = { coords: number[], distance: number, edges: { [key: string]: { coords: Position[], properties: GeoJsonProperties } } };
+
+export interface ReducedEdgeData {
+    highway: string,
+    foot: string,
+    designation: string,
+    isAccessiblePath: boolean,
+    v1?: string,
+    v2?: string
+}
+
+export interface Destination {
+    weight: number,
+    dist: number,
+    path: Position[],
+    properties: GeoJsonProperties
+}
+
+
+export interface ModelProps {
+    scale: number;
+}
+
+export interface Geodata {
+    pois: Array<Poi>;
+    ways: Array<Way>;
+    terrains: Array<THREE.Mesh>;
+}
+export interface GeoDataStore {
+    geodata: Geodata;
+    signposts: Array<Signpost>;
+    addGeoData: (newGeodata: Geodata) => void;
+    addSignpost: (newSignpost: Signpost) => void;
+    elev: number,
+    setElev: (newElev: number) => void
 }

@@ -1,7 +1,7 @@
 
 import RoutingNetwork from '../RoutingNetwork';
 import SignpostManager from '../SignpostManager';
-import { RoutingNetworkOptions, RoutablePoi, Signpost } from '../../types';
+import { RoutingNetworkOptions, RoutablePoi, Signpost } from '../../types/hikar';
 import { useRef, useEffect } from 'react';
 import type { LonLat } from 'locar';
 import type { FeatureCollection, Point, LineString } from 'geojson';

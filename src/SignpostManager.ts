@@ -5,7 +5,7 @@ import type { LonLat } from 'locar-tiler';
 import type { Point, FeatureCollection } from 'geojson';
 import { point as turfPoint } from '@turf/helpers';
 import turfBearing from '@turf/bearing';
-import type { SignpostManagerOptions, Signpost, SignpostArm, Destination, RoutablePoi } from '../types';
+import type { SignpostManagerOptions, Signpost, SignpostArm, Destination, RoutablePoi } from '../types/hikar';
 import RoutingNetwork from './RoutingNetwork';
 
 

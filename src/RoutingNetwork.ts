@@ -14,7 +14,7 @@ import PathFinder from 'geojson-path-finder-nw';
 import VertexDetector from './VertexDetector';
 import { point as turfPoint } from '@turf/helpers';
 import turfBearing from '@turf/bearing';
-import { RoutablePoi, RoutableWay, RoutingNetworkOptions, RouteOptions, FoundVertex, ReducedEdgeData, Destination, Split, HaversineDistToLineResult } from '../types';
+import { RoutablePoi, RoutableWay, RoutingNetworkOptions, RouteOptions, FoundVertex, ReducedEdgeData, Destination, Split, HaversineDistToLineResult } from '../types/hikar';
 import type { Point, FeatureCollection, GeoJsonProperties, LineString, Position, Feature } from 'geojson';
 
 

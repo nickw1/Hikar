@@ -1,4 +1,4 @@
-import { ModelProps } from "../../../types";
+import { ModelProps } from "../../../types/hikar";
 
 interface BuildingProps extends ModelProps {
     id: string;
