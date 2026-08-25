@@ -13,28 +13,27 @@ import { Text } from '@react-three/drei';
 
 export default function GeoDataRenderer() {
 
-    const { camera } = useThree();
+  
     const geodata = useStore((state) => state.geodata);
     const signposts = useStore((state) => state.signposts);
-    const elev = useStore((state) => state.elev);
     const wayColours = useRef<Map<string, string>>(new Map());
 
 
     useEffect(() => {
-        if (wayColours.current.size == 0) {
-            wayColours.current.set("footway", "green");
-            wayColours.current.set("path", "green");
-            wayColours.current.set("bublic_footpath", "green");
-            wayColours.current.set("bridleway", "#aa5500");
-            wayColours.current.set("public_bridleway", "#aa5500");
-            wayColours.current.set("byway", "red");
-            wayColours.current.set("byway_open_to_all_traffic", "red");
-            wayColours.current.set("restricted_byway", "magenta");
-            wayColours.current.set("cycleway", "blue");
-        }
-        console.log(`Setting elev to ${elev}`)
-        camera.position.setY(elev + 2);
-    }, [elev]);
+
+        wayColours.current.set("footway", "green");
+        wayColours.current.set("path", "green");
+        wayColours.current.set("bublic_footpath", "green");
+        wayColours.current.set("bridleway", "#aa5500");
+        wayColours.current.set("public_bridleway", "#aa5500");
+        wayColours.current.set("byway", "red");
+        wayColours.current.set("byway_open_to_all_traffic", "red");
+        wayColours.current.set("restricted_byway", "magenta");
+        wayColours.current.set("cycleway", "blue");
+
+
+
+    }, []);
 
     return (
         <>

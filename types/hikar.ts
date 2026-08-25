@@ -30,28 +30,10 @@ export interface OsmEntity {
 export type Poi = Feature<Point>;
 export type Way = Feature<LineString>;
 
-export interface GeoState {
-    pois: Array<Poi>;
-    ways: Array<Way>;
-    elev: number;
-
-}
-
 export interface GpsStatus {
     pos: GeolocationPosition;
     distMoved: number;
 };
-
-
-export interface PoiState {
-    pois: Array<Poi>;
-    ways: Array<Way>;
-    elev: number;
-    addPoi: (poi: Poi) => void;
-    addWay: (way: Way) => void;
-    setElev: (newElev: number) => void;
-}
-
 
 export interface RoutingNetworkOptions {
     poiDistThreshold?: number,
@@ -118,6 +100,9 @@ export interface GeoDataStore {
     signposts: Array<Signpost>;
     addGeoData: (newGeodata: Geodata) => void;
     addSignpost: (newSignpost: Signpost) => void;
-    elev: number,
-    setElev: (newElev: number) => void
+}
+
+export interface HikarMainProps {
+    longitude: number;
+    latitude: number;
 }

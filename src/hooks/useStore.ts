@@ -8,7 +8,6 @@ export const useStore = create<GeoDataStore>((set) => ({
         ways: new Array<Way>(),
         terrains: new Array<THREE.Mesh>()
     },
-    elev: 0,
     signposts: new Array<Signpost>(),
     addGeoData: (geodata: Geodata) => set((state) => ({
         "geodata": {
@@ -18,6 +17,5 @@ export const useStore = create<GeoDataStore>((set) => ({
         }
     })),
     addSignpost: (newSignpost: Signpost) => set((state) => ({ signposts: [...state.signposts, newSignpost] })),
-    setElev: (elev: number) => set(() => ({ elev }))
 }));
 
