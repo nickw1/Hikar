@@ -13,7 +13,7 @@ import { Text } from '@react-three/drei';
 
 export default function GeoDataRenderer() {
 
-  
+
     const geodata = useStore((state) => state.geodata);
     const signposts = useStore((state) => state.signposts);
     const wayColours = useRef<Map<string, string>>(new Map());
@@ -37,6 +37,9 @@ export default function GeoDataRenderer() {
 
     return (
         <>
+            {geodata.terrains.map(terrain => (
+                <primitive object={terrain} key={`trn-${terrain.userData["tileKey"]}`}></primitive>
+            ))}
             {geodata.pois.map(poi => {
                 let element = <></>;
                 switch (poi.properties!.type) {
@@ -65,11 +68,10 @@ export default function GeoDataRenderer() {
                     </GeolocationAnchor> : ""
                 );
             })}
-            {geodata.ways.map(way => {
-                return (
-                    <GeoLine key={`w${way.properties!.hikar_id}`} coordinates={way.geometry.coordinates as Array<[number, number, number]>} color={wayColours.current.get(way.properties!.type) || 'lightgray'} lineWidth={5} />
-                )
-            })}
+            {geodata.ways.map(way => (
+                <GeoLine key={`w${way.properties!.hikar_id}`} coordinates={way.geometry.coordinates as Array<[number, number, number]>} color={wayColours.current.get(way.properties!.type) || 'lightgray'} lineWidth={5} />
+            )
+            )}
         </>
     )
 

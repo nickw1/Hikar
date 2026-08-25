@@ -80,7 +80,7 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
                         const terrainGenerator = new TerrainGenerator(newDem);
                         const terrain = terrainGenerator.genTerrain(locar!);
                         terrain.userData["tileKey"] = tileKey;
-                        terrain.renderOrder = 1;
+                        terrain.renderOrder = -1;
                         (terrain.material as THREE.MeshStandardMaterial).colorWrite = false;
                         geodata.terrains.push(terrain);
                     }
