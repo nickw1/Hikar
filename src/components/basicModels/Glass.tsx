@@ -1,6 +1,6 @@
 import { ModelProps } from '../../../types/hikar';
 
-export default function Glass({scale} : ModelProps) {
+export default function Glass({scale,  onClick = () => {} } : ModelProps) {
     return(
         <group scale={scale}>
             <mesh position={[0, 1.5, 0]} >

@@ -4,6 +4,8 @@ import type { Feature, Position, GeoJsonProperties, Point, LineString, FeatureCo
 import BoundingBox from '../src/BoundingBox';
 import RoutingNetwork from '../src/RoutingNetwork';
 import * as THREE from 'three';
+import type { ThreeEvent } from '@react-three/fiber';
+
 
 
 export interface LayerInfo {
@@ -83,12 +85,13 @@ export interface Destination {
     weight: number,
     dist: number,
     path: Position[],
-    properties: GeoJsonProperties
+    properties: GeoJsonProperties,
 }
 
 
 export interface ModelProps {
-    scale: number;
+    scale: number,
+    onClick?: (e: ThreeEvent<THREE.Mesh | THREE.Group>) => void
 }
 
 export interface Geodata {

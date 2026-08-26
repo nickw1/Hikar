@@ -1,6 +1,6 @@
 import { ModelProps } from "../../../types/hikar";
 
-export default function Tree({ scale } : ModelProps) {
+export default function Tree({ scale,  onClick = () => {}  } : ModelProps) {
     return(
         <group scale={scale}>
             <mesh position={[0, 4, 0]}>

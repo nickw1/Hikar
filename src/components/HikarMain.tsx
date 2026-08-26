@@ -24,7 +24,7 @@ export default function HikarMain({ longitude, latitude, hFov = 80 }: HikarMainP
     const setLoadingMsg = useMsgStore((state) => state.setLoadingMsg);
     const setStatusMsg = useMsgStore((state) => state.setStatusMsg);
 
-    const { updateTiler, getElevation, getDataForTile } = useTiler("/dem/{z}/{x}/{y}.png", "/map/{z}/{x}/{y}.json?outProj=4326");
+    const { updateTiler, getElevation, getDataForTile } = useTiler("/dem/{z}/{x}/{y}.png", "/map/{z}/{x}/{y}.json?outProj=4326&");
     const { updateRoutingNetwork, addRoutablePoi, findSignpostAtLonLat } = useRouting({
         juncDistThreshold: 0.05
     });

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { GeolocationAnchor, GeoLine } from '@omnidotdev/rdk/geolocation';
 import { useStore } from '../hooks/useStore';
 import Cup from './basicModels/Cup';
@@ -8,6 +8,9 @@ import Tree from './basicModels/Tree';
 import Building from './basicModels/Building';
 import RenderedSignpost from './signpost/RenderedSignpost';
 import { Text } from '@react-three/drei';
+import type { Poi } from '../../types/hikar';
+import * as THREE from 'three';
+import type { ThreeEvent } from '@react-three/fiber';
 
 
 export default function GeoDataRenderer() {
@@ -31,6 +34,15 @@ export default function GeoDataRenderer() {
         wayColours.current["track"] = "#ff8000";
     }, []);
 
+
+
+    const clickHandler = useCallback((poi: Poi, e: ThreeEvent<THREE.Mesh | THREE.Group>) => {
+        e.stopPropagation();
+        if (poi.properties?.name) {
+            alert(`This is ${poi.properties.name}`);
+        }
+    }, []);
+
     return (
         <>
             {geodata.terrains.map(terrain => (
@@ -38,30 +50,34 @@ export default function GeoDataRenderer() {
             ))}
             {geodata.pois.map(poi => {
                 let element = <></>;
+                console.log(`Name ${poi.properties!.name} Type ${poi.properties!.type}`)
                 switch (poi.properties!.type) {
                     case "pub":
                     case "bar":
-                        element = <Glass scale={4} />;
+                        element = <Glass scale={4} onClick={(e: ThreeEvent<THREE.Mesh | THREE.Group>) => clickHandler(poi, e)} />;
                         break;
                     case "cafe":
-                        element = <Cup scale={4} />;
+                        element = <Cup scale={4} onClick={(e: ThreeEvent<THREE.Mesh | THREE.Group>) => clickHandler(poi, e)} />;
                         break;
                     case "tree":
-                        element = <Tree scale={4} />;
+                        element = <Tree scale={4} onClick={(e: ThreeEvent<THREE.Mesh | THREE.Group>) => clickHandler(poi, e)} />;
+                        break;
                     case "peak":
-                        element = <mesh scale={4}><coneGeometry args={[8, 24]} /><meshStandardMaterial color={0xff00ff} /></mesh>;
+                        element = <mesh scale={4} onClick={(e: ThreeEvent<THREE.Mesh | THREE.Group>) => clickHandler(poi, e)}><coneGeometry args={[8, 24]} /><meshStandardMaterial color={0xff00ff} /></mesh>;
+                        break;
                     case "shop":
                     case "building":
-                        element = <Building scale={4} id={`bldg-${poi.id}`} />;
+                        element = <Building scale={4} id={`bldg-${poi.id}`} onClick={(e: ThreeEvent<THREE.Mesh | THREE.Group>) => clickHandler(poi, e)} />;
+                        break;
                     default:
-                        element = <Marker scale={4} />;
+                        element = <Marker scale={4} onClick={(e: ThreeEvent<THREE.Mesh | THREE.Group>) => clickHandler(poi, e)} />;
                 }
 
-                return (poi.properties!.name ?
+                return (
                     <GeolocationAnchor key={`${poi.properties!.hikar_id}`} latitude={poi.geometry.coordinates[1]} longitude={poi.geometry.coordinates[0]} altitude={poi.geometry.coordinates[2]}>
                         {element}
-                        <Text position={[0, -1, 0]} scale={5} font="https://fonts.gstatic.com/s/roboto/v18/KFOmCnqEu92Fr1Mu4mxM.woff" color="white" anchorX="center" anchorY="middle">{poi.properties!.name}</Text>
-                    </GeolocationAnchor> : ""
+                        {poi.properties!.name ? <Text position={[0, -2, 0]} scale={5} font="https://fonts.gstatic.com/s/roboto/v18/KFOmCnqEu92Fr1Mu4mxM.woff" color="white" anchorX="center" anchorY="middle">{poi.properties!.name}</Text> : ""}
+                    </GeolocationAnchor>
                 );
             })}
             {geodata.ways.map(way => (

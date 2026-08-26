@@ -71,7 +71,7 @@ export default function RenderedSignpost({ signpost }: RenderedSignpostProps) {
             {
                 (Object.keys(signpost.arms) as any as number[]).map( (bearing: number) => {
                     const arm = signpost.arms[bearing];
-                    const scaleFactor = 12 * (arm.destinations.length > 0 ? 1.8 : 2);
+                    const scaleFactor = 10 * (arm.destinations.length > 0 ? 1.8 : 2);
                     const routeInfo = getRouteInfo(arm);
                     console.log(`bearing ${bearing}`)
                     return (

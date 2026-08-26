@@ -4,9 +4,9 @@ interface BuildingProps extends ModelProps {
     id: string;
 }
 
-export default function Building({ id, scale }: BuildingProps ) {
+export default function Building({ id, scale, onClick = () => {} }: BuildingProps ) {
     return (
-        <group scale={scale}>
+        <group scale={scale} onClick={onClick}>
             <mesh position={[0, 0.75, 0]}>
                 <boxGeometry args={[1.5, 1.5, 1.5]} />
                 <meshStandardMaterial color="#ff6060" />

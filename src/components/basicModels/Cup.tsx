@@ -1,8 +1,8 @@
 import { ModelProps } from '../../../types/hikar';
 
-export default function Cup({scale} : ModelProps) {
+export default function Cup({scale,  onClick = () => {} } : ModelProps) {
     return(
-        <group scale={scale}>
+        <group scale={scale} onClick={onClick}>
             <mesh position={[0, 2.7, 0]} rotation={[0, 0,  Math.PI]}>
                 <sphereGeometry args={[3, 32, 16, 0, Math.PI*2, 0, Math.PI /2]} />
                 <meshBasicMaterial color="#8080ff" />

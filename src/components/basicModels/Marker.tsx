@@ -1,11 +1,11 @@
 import { ModelProps } from '../../../types/hikar';
 
-export default function Marker({scale} : ModelProps) {
+export default function Marker({scale,  onClick = () => {} } : ModelProps) {
 
    const colour = "red";
   
    return (
-        <group scale={scale}>
+        <group scale={scale} onClick={onClick}>
             <mesh rotation={[Math.PI, 0, 0]} position={[0, 1.5, 0]}>
                 <coneGeometry args={[1, 3, 64]} />
                 <meshStandardMaterial transparent={true} color={colour} opacity={0.7} />
