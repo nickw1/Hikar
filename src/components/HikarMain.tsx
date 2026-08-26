@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useGeolocationBackend } from '@omnidotdev/rdk/geolocation';
 import { useThree } from '@react-three/fiber';
 import GeoDataRenderer from './GeoDataRenderer';

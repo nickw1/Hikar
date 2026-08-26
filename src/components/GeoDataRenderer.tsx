@@ -18,20 +18,21 @@ export default function GeoDataRenderer() {
     console.log("rendering GeoDataRenderer");
     const geodata = useStore((state) => state.geodata);
     const signposts = useStore((state) => state.signposts);
-    const wayColours = useRef<{ [type: string]: string }>({});
+    const wayColours = useRef<{ [type: string]: { colour: string, width: number } }>({});
 
 
     useEffect(() => {
-        wayColours.current["footway"] = "green";
-        wayColours.current["path"] = "green";
-        wayColours.current["public_footpath"] = "green";
-        wayColours.current["bridleway"] = "#aa5500";
-        wayColours.current["public_bridleway"] = "#aa5500";
-        wayColours.current["byway"] = "red";
-        wayColours.current["byway_open_to_all_traffic"] = "red";
-        wayColours.current["restricted_byway"] = "magenta";
-        wayColours.current["cycleway"] = "blue";
-        wayColours.current["track"] = "#ff8000";
+        wayColours.current["footway"] = { colour: "green", width: 2 };
+        wayColours.current["path"] = { colour: "green", width: 2 };
+        wayColours.current["public_footpath"] = { colour: "green", width: 2 };
+        wayColours.current["bridleway"] = { colour: "#aa5500", width: 3 };
+        wayColours.current["public_bridleway"] = { colour: "#aa5500", width: 3 };
+        wayColours.current["byway"] = { colour: "red", width: 4 };
+        wayColours.current["byway_open_to_all_traffic"] = { colour: "red", width: 4 };
+        wayColours.current["restricted_byway"] = { colour: "magenta", width: 4 };
+        wayColours.current["cycleway"] = { colour: "blue", width: 4 };
+        wayColours.current["track"] = { colour: "#ff8000", width: 4 };
+        wayColours.current["service"] = { colour: "lightgray", width: 4 };
     }, []);
 
 
@@ -81,7 +82,7 @@ export default function GeoDataRenderer() {
                 );
             })}
             {geodata.ways.map(way => (
-                <GeoLine key={`${way.properties!.hikar_id}`} coordinates={way.geometry.coordinates as Array<[number, number, number]>} color={wayColours.current[way.properties!.type] || 'lightgray'} lineWidth={5} />
+                <GeoLine key={`${way.properties!.hikar_id}`} coordinates={way.geometry.coordinates as Array<[number, number, number]>} color={wayColours.current[way.properties!.type]?.colour || 'lightgray'} lineWidth={wayColours.current[way.properties!.type]?.width || 6} />
             )
             )}
             {signposts.map(signpost => (

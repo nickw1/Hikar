@@ -15,9 +15,6 @@ export default function App() {
 
     console.log("rendering App");
     return (<>
-        <StatusMsg />
-        <LoadingMsg />
-
         <Canvas gl={{ antialias: false, powerPreference: "default" }} style={{
             width: "100%",
             height: "100%",
@@ -36,15 +33,16 @@ export default function App() {
                     setLonLat(pos.coords);
                 }
             }}>
-                <HikarMain longitude={lonLat.longitude} latitude={lonLat.latitude} hFov={80}/>
+                <HikarMain longitude={lonLat.longitude} latitude={lonLat.latitude} />
 
             </GeolocationSession>
 
+
         </Canvas>
+        <StatusMsg />
+        <LoadingMsg />
 
     </>
-
-
     );
 
 }
