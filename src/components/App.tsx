@@ -36,7 +36,7 @@ export default function App() {
                     setLonLat(pos.coords);
                 }
             }}>
-                <HikarMain longitude={lonLat.longitude} latitude={lonLat.latitude} />
+                <HikarMain longitude={lonLat.longitude} latitude={lonLat.latitude} hFov={80}/>
 
             </GeolocationSession>
 

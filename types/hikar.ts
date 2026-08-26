@@ -106,6 +106,7 @@ export interface GeoDataStore {
 export interface HikarMainProps {
     longitude: number;
     latitude: number;
+    hFov?: number;
 }
 
 export interface MsgStore {

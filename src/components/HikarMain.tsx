@@ -16,7 +16,7 @@ import BoundingBox from '../BoundingBox';
 import * as THREE from 'three';
 
 
-export default function HikarMain({ longitude, latitude }: HikarMainProps) {
+export default function HikarMain({ longitude, latitude, hFov = 80 }: HikarMainProps) {
 
 
     const addGeoData = useStore((state) => state.addGeoData);
@@ -38,18 +38,25 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
     const noAccess = ["private", "no"];
 
     const { locar } = useGeolocationBackend();
-    const { camera } = useThree();
+    const { camera, gl } = useThree();
 
     useEffect(() => {
         onPosUpdated({ longitude, latitude });
     }, [longitude, latitude]);
+
+
+    
+    useEffect(() => {
+        (camera as THREE.PerspectiveCamera).fov = hFov * (gl.domElement.height / gl.domElement.width);
+        camera.updateProjectionMatrix();
+    }, [hFov]);
+    
 
     console.log("Rendering HikarMain");
 
     return (
         <GeoDataRenderer />
     );
-
 
 
     async function onPosUpdated(pos: LonLat) {
