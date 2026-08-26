@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { useThree } from '@react-three/fiber';
 import { GeolocationAnchor, GeoLine } from '@omnidotdev/rdk/geolocation';
 import { useStore } from '../hooks/useStore';
 import Cup from './basicModels/Cup';
@@ -16,23 +15,20 @@ export default function GeoDataRenderer() {
     console.log("rendering GeoDataRenderer");
     const geodata = useStore((state) => state.geodata);
     const signposts = useStore((state) => state.signposts);
-    const wayColours = useRef<Map<string, string>>(new Map());
+    const wayColours = useRef<{ [type: string]: string }>({});
 
 
     useEffect(() => {
-
-        wayColours.current.set("footway", "green");
-        wayColours.current.set("path", "green");
-        wayColours.current.set("bublic_footpath", "green");
-        wayColours.current.set("bridleway", "#aa5500");
-        wayColours.current.set("public_bridleway", "#aa5500");
-        wayColours.current.set("byway", "red");
-        wayColours.current.set("byway_open_to_all_traffic", "red");
-        wayColours.current.set("restricted_byway", "magenta");
-        wayColours.current.set("cycleway", "blue");
-
-
-
+        wayColours.current["footway"] = "green";
+        wayColours.current["path"] = "green";
+        wayColours.current["public_footpath"] = "green";
+        wayColours.current["bridleway"] = "#aa5500";
+        wayColours.current["public_bridleway"] = "#aa5500";
+        wayColours.current["byway"] = "red";
+        wayColours.current["byway_open_to_all_traffic"] = "red";
+        wayColours.current["restricted_byway"] = "magenta";
+        wayColours.current["cycleway"] = "blue";
+        wayColours.current["track"] = "#ff8000";
     }, []);
 
     return (
@@ -69,22 +65,16 @@ export default function GeoDataRenderer() {
                 );
             })}
             {geodata.ways.map(way => (
-                <GeoLine key={`${way.properties!.hikar_id}`} coordinates={way.geometry.coordinates as Array<[number, number, number]>} color={wayColours.current.get(way.properties!.type) || 'lightgray'} lineWidth={5} />
+                <GeoLine key={`${way.properties!.hikar_id}`} coordinates={way.geometry.coordinates as Array<[number, number, number]>} color={wayColours.current[way.properties!.type] || 'lightgray'} lineWidth={5} />
             )
             )}
             {signposts.map(signpost => (
                 <GeolocationAnchor key={`sp-${signpost.jKey}`} longitude={signpost.position[0]} latitude={signpost.position[1]} altitude={signpost.position[2]}>
-                     <RenderedSignpost signpost={signpost} />
+                    <RenderedSignpost signpost={signpost} />
                 </GeolocationAnchor>
-              ))}
-           
+            ))}
+
         </>
     )
 
 }
-
-/*  {signposts.map(signpost => (
-                <GeolocationAnchor key={`sp-${signpost.jKey}`} longitude={signpost.position[0]} latitude={signpost.position[1]} altitude={signpost.position[2]}>
-                    <RenderedSignpost signpost={signpost} />
-                </GeolocationAnchor>
-            ))}*/

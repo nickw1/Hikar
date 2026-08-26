@@ -107,3 +107,10 @@ export interface HikarMainProps {
     longitude: number;
     latitude: number;
 }
+
+export interface MsgStore {
+    loadingMsg: string;
+    statusMsg: string;
+    setLoadingMsg: (msg: string) => void;
+    setStatusMsg: (msg: string) => void;
+}

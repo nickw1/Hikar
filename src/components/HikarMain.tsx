@@ -3,9 +3,9 @@ import { useGeolocationBackend } from '@omnidotdev/rdk/geolocation';
 import { useThree } from '@react-three/fiber';
 import GeoDataRenderer from './GeoDataRenderer';
 import TerrainGenerator from '../terrain';
-import LoadingMsg from './LoadingMsg';
 import { FeatureCollection, LineString, Point, MultiLineString, GeoJsonProperties } from 'geojson';
 import { useStore } from '../hooks/useStore';
+import { useMsgStore } from '../hooks/useMsgStore';
 import { Way, Poi } from '../../types/hikar';
 import useTiler from '../hooks/useTiler';
 import useIndexedFeatures from '../hooks/useIndexedFeatures';
@@ -21,7 +21,9 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
 
     const addGeoData = useStore((state) => state.addGeoData);
     const addSignpost = useStore((state) => state.addSignpost);
-    const [status, setStatus] = useState("Waiting for GPS...");
+    const setLoadingMsg = useMsgStore((state) => state.setLoadingMsg);
+    const setStatusMsg = useMsgStore((state) => state.setStatusMsg);
+
     const { updateTiler, getElevation, getDataForTile } = useTiler("/dem/{z}/{x}/{y}.png", "/map/{z}/{x}/{y}.json?outProj=4326");
     const { updateRoutingNetwork, addRoutablePoi, findSignpostAtLonLat } = useRouting({
         juncDistThreshold: 0.05
@@ -56,12 +58,14 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
         if (LocAR.haversineDist(lastPos.current, pos) > 10) {
             lastPos.current.latitude = pos.latitude;
             lastPos.current.longitude = pos.longitude;
-            setStatus("Downloading data...");
+            setLoadingMsg("Downloading data...");
             const newData = await updateTiler(pos);
             const elev = getElevation(pos) ?? 0;
             console.log(`elev: ${elev}`);
+            setStatusMsg(`Lat: ${pos.latitude.toFixed(2)} Lon: ${pos.longitude.toFixed(2)} Elev: ${Math.round(elev)}m`);
             camera.position.setY(elev + 2);
             if (newData.length > 0) {
+                setLoadingMsg("Rendering data...");
                 const geodata = {
                     pois: new Array<Poi>(),
                     ways: new Array<Way>(),
@@ -171,10 +175,10 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
                         }
                     }
                 }
+                setLoadingMsg("Updating routing...");
                 updateRoutingNetwork(waysForRouting, poisForRouting);
                 console.log("triggering render of geodata");
                 addGeoData(geodata);
-                setStatus("");
             }
             const signpost = findSignpostAtLonLat(pos);
             if (signpost !== null) {
@@ -182,6 +186,7 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
                 addSignpost(signpost);
                 printSignpost(signpost);
             }
+            setLoadingMsg("");
         }
 
     }

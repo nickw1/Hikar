@@ -28,9 +28,9 @@ export default class MapModel {
                 conditions: "highway <> ''"
             }, 
             poi: {
-                cols : 'name, "natural", place, amenity',
+                cols : 'name, "natural", place, amenity, shop, building, tourism',
                 table : 'planet_osm_point',
-                conditions: "place <> '' OR amenity <> '' OR \"natural\" <> '' OR railway <> '' OR tourism <> ''"
+                conditions: "place <> '' OR amenity <> '' OR \"natural\" <> '' OR railway <> '' OR tourism <> '' OR building <> '' OR shop <> ''"
             }
         };
     }
