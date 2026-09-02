@@ -4,7 +4,7 @@
 
 As stated above, data is sourced from OpenStreetMap, but stored in Hikar's own [osm2pgsql](https://osm2pgsql.org) derived PostGIS database rather than being fetched directly from OpenStreetMap servers. 
 
-Elevation data is also stored locally on Hikar's own server rather than being fetched from third-party web APIs or cloud services. It has been sourced from [NASA SRTM](https://earthexplorer.usgs.gov) and [Japan's ALOS](https://www.eorc.jaxa.jp/ALOS/en/dataset/aw3d30/aw3d30_e.htm) for higher latitudes.
+The intention is for elevation data to be stored locally on Hikar's own server to reduce reliance on third-party services. Much of this data has been created already. However, there are unfortunately some gaps in coverage across Europe and limited server space, so for now the elevaton data is sourced from [**the Terrarium dataset on AWS**](https://registry.opendata.aws/terrain-tiles/), which is an open data set. Self-hosted data, when available, will be sourced from [NASA SRTM](https://earthexplorer.usgs.gov) and [Japan's ALOS](https://www.eorc.jaxa.jp/ALOS/en/dataset/aw3d30/aw3d30_e.htm) for higher latitudes.
 
 Hikar is currently live at [https://hikar.org](hikar.org). Currently the live Hikar server **only provides data in Europe and Turkey** due to server constraints, however the software is capable of working globally. So if you wanted to set up a Hikar server for your own area of the world, you could do using the above data sources.
 
