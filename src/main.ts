@@ -64,6 +64,12 @@ const signpostRenderer = new SignpostRenderer(
   '/assets/signpost_textures.png'
 );
 
+const gpsErrorCodes = [
+  "Access to GPS denied by user",
+  "GPS satellites unavailable",
+  "Timeout contacting GPS satellites"
+];
+
 try {
   locar = await app.start();
   locar.setElevation(100);
@@ -80,12 +86,13 @@ try {
   //locar.fakeGps(-0.728487, 51.051384);
 
   locar.on("gpserror", (ev: GeolocationPositionError) => {
-    alert(ev.code);
+    alert(`GPS error: ${gpsErrorCodes[ev.code + 1] ?? "Unknown GPS error"}`);
   });
 
   await signpostRenderer.loadAssets();
 } catch (e: any) {
-  alert(e);
+  console.error(e);
+  alert('Error encountered, please look at the browser console in the Developer tools and raise an issue on GitHub.');
 }
 
 
