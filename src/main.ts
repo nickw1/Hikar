@@ -38,7 +38,7 @@ const indexedFeatures = new Map<String, Feature>();
 const highwayMaterials = new Map<String, THREE.Material>();
 
 const demApplier = new DemApplier(
-  demTiler = new DemTiler("/dem/{z}/{x}/{y}.png"),
+  demTiler = new DemTiler("/dem/aws/{z}/{x}/{y}.png"),
   new GeoJsonTiler("/map/{z}/{x}/{y}.json?outProj=4326")
 );
 
@@ -77,6 +77,7 @@ try {
 
   locar.on("gpsupdate", onGpsUpdate);
   locar.startGps();
+  //locar.fakeGps(-0.728487, 51.051384);
 
   locar.on("gpserror", (ev: GeolocationPositionError) => {
     alert(ev.code);
@@ -295,7 +296,7 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
 
       printSignpost(newSignpost);
       const signpostModel = await signpostRenderer.renderSignpost(newSignpost);
-     
+
       if (signpostModel) {
         signpostModel.renderOrder = 1;
         locar?.add(signpostModel, newSignpost.position[0], newSignpost.position[1], newSignpost.position[2]);
