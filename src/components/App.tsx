@@ -1,4 +1,5 @@
-import React, { useState, Suspense } from 'react';
+import React, { useState } from 'react';
+import { XR } from '@omnidotdev/rdk/engine';
 import { GeolocationSession } from '@omnidotdev/rdk/geolocation';
 import { Canvas } from '@react-three/fiber';
 import HikarMain from './HikarMain';
@@ -26,16 +27,18 @@ export default function App() {
             <ambientLight intensity={1.0} />
             <directionalLight position={[10, 10, 10]} intensity={2} />
 
-            <GeolocationSession options={{
-                fakeLat: START_POS.lat, fakeLon: START_POS.lon,
-                onGpsUpdate: (pos, distMoved) => {
-                    console.log(`got a gps pos: ${pos.coords}`);
-                    setLonLat(pos.coords);
-                }
-            }}>
-                <HikarMain longitude={lonLat.longitude} latitude={lonLat.latitude} />
+            <XR>
+                <GeolocationSession options={{
+                    fakeLat: START_POS.lat, fakeLon: START_POS.lon,
+                    onGpsUpdate: (pos, distMoved) => {
+                        console.log(`got a gps pos: ${pos.coords}`);
+                        setLonLat(pos.coords);
+                    }
+                }}>
+                    <HikarMain longitude={lonLat.longitude} latitude={lonLat.latitude} />
 
-            </GeolocationSession>
+                </GeolocationSession>
+            </XR>
 
 
         </Canvas>
