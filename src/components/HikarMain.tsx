@@ -24,7 +24,7 @@ export default function HikarMain({ longitude, latitude, hFov = 80 }: HikarMainP
     const setLoadingMsg = useMsgStore((state) => state.setLoadingMsg);
     const setStatusMsg = useMsgStore((state) => state.setStatusMsg);
 
-    const { updateTiler, getElevation, getDataForTile } = useTiler("/dem/{z}/{x}/{y}.png", "/map/{z}/{x}/{y}.json?outProj=4326&");
+    const { updateTiler, getElevation, getDataForTile } = useTiler("/dem/{z}/{x}/{y}.png", "https://hikar.org/map/{z}/{x}/{y}.json?outProj=4326&");
     const { updateRoutingNetwork, addRoutablePoi, findSignpostAtLonLat } = useRouting({
         juncDistThreshold: 0.05
     });
@@ -45,12 +45,12 @@ export default function HikarMain({ longitude, latitude, hFov = 80 }: HikarMainP
     }, [longitude, latitude]);
 
 
-    
+
     useEffect(() => {
         (camera as THREE.PerspectiveCamera).fov = hFov * (gl.domElement.height / gl.domElement.width);
         camera.updateProjectionMatrix();
     }, [hFov]);
-    
+
 
     console.log("Rendering HikarMain");
 
@@ -73,11 +73,10 @@ export default function HikarMain({ longitude, latitude, hFov = 80 }: HikarMainP
             camera.position.setY(elev + 2);
             if (newData.length > 0) {
                 setLoadingMsg("Rendering data...");
-                const geodata = {
-                    pois: new Array<Poi>(),
-                    ways: new Array<Way>(),
-                    terrains: new Array<THREE.Mesh>()
-                };
+                const pois = new Array<Poi>(),
+                    ways = new Array<Way>(),
+                    terrains = new Array<THREE.Mesh>();
+
                 const poisForRouting: FeatureCollection<Point> = {
                     "type": "FeatureCollection",
                     "features": new Array<Poi>()
@@ -95,7 +94,7 @@ export default function HikarMain({ longitude, latitude, hFov = 80 }: HikarMainP
                         terrain.userData["tileKey"] = tileKey;
                         terrain.renderOrder = -1;
                         (terrain.material as THREE.MeshStandardMaterial).colorWrite = false;
-                        geodata.terrains.push(terrain);
+                        terrains.push(terrain);
                     }
                     for (let feature of (dataTile.data as FeatureCollection).features) {
                         feature.properties ??= {};
@@ -114,7 +113,7 @@ export default function HikarMain({ longitude, latitude, hFov = 80 }: HikarMainP
                                     feature.properties.hikar_id = `poi-${props.osm_id}`;
                                     const poiForRendering = structuredClone(feature) as Poi;
                                     poiForRendering.properties!.type = props.building !== undefined ? "building" : props.place || props.natural || props.amenity;
-                                    geodata.pois.push(poiForRendering);
+                                    pois.push(poiForRendering);
                                     if (props.name) {
                                         const routablePoi = structuredClone(feature) as RoutablePoi;
 
@@ -135,7 +134,7 @@ export default function HikarMain({ longitude, latitude, hFov = 80 }: HikarMainP
                                         const filteredCoords = feature.geometry.coordinates.filter(coord => coord[2] !== undefined);
 
                                         if (filteredCoords.length >= 2) {
-                                            geodata.ways.push({
+                                            ways.push({
                                                 type: "Feature",
                                                 geometry: {
                                                     "type": "LineString",
@@ -169,7 +168,7 @@ export default function HikarMain({ longitude, latitude, hFov = 80 }: HikarMainP
                                                     properties: { ...feature.properties, type: feature.properties?.designation || feature.properties?.highway } as GeoJsonProperties
                                                 };
                                                 splitWay.properties!.hikar_id = `way-${baseId}#${i++}`;
-                                                geodata.ways.push(splitWay);
+                                                ways.push(splitWay);
                                                 const routableWay = structuredClone(splitWay) as RoutableWay;
                                                 routableWay.boundingBox = BoundingBox.fromCoords(routableWay.geometry.coordinates);
                                                 waysForRouting.features.push(routableWay);
@@ -185,7 +184,7 @@ export default function HikarMain({ longitude, latitude, hFov = 80 }: HikarMainP
                 setLoadingMsg("Updating routing...");
                 updateRoutingNetwork(waysForRouting, poisForRouting);
                 console.log("triggering render of geodata");
-                addGeoData(geodata);
+                addGeoData(ways, pois, terrains);
             }
             const signpost = findSignpostAtLonLat(pos);
             if (signpost !== null) {

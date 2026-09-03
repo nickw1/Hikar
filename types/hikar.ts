@@ -100,10 +100,15 @@ export interface Geodata {
     terrains: Array<THREE.Mesh>;
 }
 export interface GeoDataStore {
-    geodata: Geodata;
+    pois: Array<Poi>;
+    ways: Array<Way>;
+    terrains: Array<THREE.Mesh>;
     signposts: Array<Signpost>;
-    addGeoData: (newGeodata: Geodata) => void;
+    addGeoData: (ways: Array<Way>, pois: Array<Poi>, terrains: Array<THREE.Mesh>) => void;
     addSignpost: (newSignpost: Signpost) => void;
+    addWays: (ways: Array<Way>) => void;
+    addPois: (pois: Array<Poi>) => void;
+    addTerrains: (terrains: Array<THREE.Mesh>) => void;
 }
 
 export interface HikarMainProps {

@@ -1,20 +1,27 @@
 import { create } from 'zustand';
-import { Poi, Way, Signpost, Geodata, GeoDataStore } from '../../types/hikar';
+import { Poi, Way, Signpost, GeoDataStore } from '../../types/hikar';
 import * as THREE from 'three';
 
 export const useStore = create<GeoDataStore>((set) => ({
-    geodata: {
-        pois: new Array<Poi>(),
-        ways: new Array<Way>(),
-        terrains: new Array<THREE.Mesh>()
-    },
+    pois: new Array<Poi>(),
+    ways: new Array<Way>(),
+    terrains: new Array<THREE.Mesh>(),
+
     signposts: new Array<Signpost>(),
-    addGeoData: (geodata: Geodata) => set((state) => ({
-        "geodata": {
-            "pois": [...state.geodata.pois, ...geodata.pois],
-            "ways": [...state.geodata.ways, ...geodata.ways],
-            "terrains": [...state.geodata.terrains, ...geodata.terrains]
-        }
+
+    addGeoData: (ways: Array<Way>, pois: Array<Poi>, terrains: Array<THREE.Mesh>) => set((state) => ({
+        "pois": [...state.pois, ...pois],
+        "ways": [...state.ways, ...ways],
+        "terrains": [...state.terrains, ...terrains]
+    })),
+    addWays: (ways: Array<Way>) => set((state) => ({
+        ways: [...state.ways, ...ways]
+    })),
+    addPois: (pois: Array<Poi>) => set((state) => ({
+        pois: [...state.pois, ...pois]
+    })),
+    addTerrains: (terrains: Array<THREE.Mesh>) => set((state) => ({
+        terrains: [...state.terrains, ...terrains]
     })),
     addSignpost: (newSignpost: Signpost) => set((state) => ({ signposts: [...state.signposts, newSignpost] })),
 }));

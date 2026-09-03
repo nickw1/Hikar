@@ -22,7 +22,6 @@ export default function RenderedPoi({ poi }: { poi: Poi }) {
 
 
     let element = <></>;
-    console.log(`Name ${poi.properties!.name} Type ${poi.properties!.type}`)
     switch (poi.properties!.type) {
         case "pub":
         case "bar":
@@ -39,7 +38,7 @@ export default function RenderedPoi({ poi }: { poi: Poi }) {
             break;
         case "shop":
         case "building":
-            element = <Building scale={4} id={`bldg-${poi.id}`} onClick={clickHandler} />;
+            element = <Building scale={4} id={`bldg-${poi.properties!.hikar_id}`} onClick={clickHandler} />;
             break;
         default:
             element = <Marker scale={4} onClick={clickHandler} />;

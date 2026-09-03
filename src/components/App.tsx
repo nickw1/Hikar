@@ -10,6 +10,7 @@ import type { LonLat } from 'locar';
 
 export default function App() {
 
+    // Fake location used for initial testing
     const START_POS = { lat: 51.051384, lon: -0.728487 };
 
     const [lonLat, setLonLat] = useState<LonLat>({ longitude: 0, latitude: 0 });
@@ -29,10 +30,14 @@ export default function App() {
 
             <XR>
                 <GeolocationSession options={{
-                    fakeLat: START_POS.lat, fakeLon: START_POS.lon,
+                    fakeLat: START_POS.lat,
+                    fakeLon: START_POS.lon,
                     onGpsUpdate: (pos, distMoved) => {
-                        console.log(`got a gps pos: ${pos.coords}`);
-                        setLonLat(pos.coords);
+                        console.log(`got a gps pos: ${pos.coords.longitude} ${pos.coords.latitude}, distMoved = ${distMoved}`);
+                        if (distMoved > 5) {
+                            console.log("setting lon/lat, should trigger render...");
+                            setLonLat(pos.coords);
+                        }
                     }
                 }}>
                     <HikarMain longitude={lonLat.longitude} latitude={lonLat.latitude} />
