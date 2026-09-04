@@ -7,6 +7,7 @@ import LoadingMsg from './LoadingMsg';
 import StatusMsg from './StatusMsg';
 import type { LonLat } from 'locar';
 import type { AppParams } from '../../types/hikar';
+import { useMsgStore } from '../hooks/useMsgStore';
 
 
 export default function App({ fakeLat, fakeLon }: AppParams) {
@@ -14,9 +15,14 @@ export default function App({ fakeLat, fakeLon }: AppParams) {
     // Fake location used for initial testing
     // const START_POS = { lat: 51.051384, lon: -0.728487 };
 
-    const [lonLat, setLonLat] = useState<LonLat>({ longitude: 0, latitude: 0 });
+    const [lonLat, setLonLat] = useState<LonLat | null>(null);
 
-    console.log("rendering App");
+    const setLoadingMsg = useMsgStore((state) => state.setLoadingMsg);
+
+    if (lonLat === null) {
+        setLoadingMsg("Waiting for GPS...");
+    }
+
     return (<>
         <Canvas gl={{ antialias: false, powerPreference: "default" }} style={{
             width: "100%",
@@ -41,9 +47,10 @@ export default function App({ fakeLat, fakeLon }: AppParams) {
                         }
                     }
                 }}>
-                    <HikarMain longitude={lonLat.longitude} latitude={lonLat.latitude} />
+                    {lonLat === null ? "" : <HikarMain longitude={lonLat.longitude} latitude={lonLat.latitude} />}
 
                 </GeolocationSession>
+
             </XR>
 
 
