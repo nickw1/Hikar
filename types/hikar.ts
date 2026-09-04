@@ -123,3 +123,8 @@ export interface MsgStore {
     setLoadingMsg: (msg: string) => void;
     setStatusMsg: (msg: string) => void;
 }
+
+export interface AppParams {
+    fakeLon?: string | null;
+    fakeLat?: string | null;
+}

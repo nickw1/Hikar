@@ -6,12 +6,13 @@ import HikarMain from './HikarMain';
 import LoadingMsg from './LoadingMsg';
 import StatusMsg from './StatusMsg';
 import type { LonLat } from 'locar';
+import type { AppParams } from '../../types/hikar';
 
 
-export default function App() {
+export default function App({ fakeLat, fakeLon }: AppParams) {
 
     // Fake location used for initial testing
-    const START_POS = { lat: 51.051384, lon: -0.728487 };
+    // const START_POS = { lat: 51.051384, lon: -0.728487 };
 
     const [lonLat, setLonLat] = useState<LonLat>({ longitude: 0, latitude: 0 });
 
@@ -30,8 +31,8 @@ export default function App() {
 
             <XR>
                 <GeolocationSession options={{
-                    fakeLat: START_POS.lat,
-                    fakeLon: START_POS.lon,
+                    fakeLat: fakeLat === undefined || fakeLat === null ? undefined : parseFloat(fakeLat),
+                    fakeLon: fakeLon === undefined || fakeLon === null ? undefined : parseFloat(fakeLon),
                     onGpsUpdate: (pos, distMoved) => {
                         console.log(`got a gps pos: ${pos.coords.longitude} ${pos.coords.latitude}, distMoved = ${distMoved}`);
                         if (distMoved > 5) {
