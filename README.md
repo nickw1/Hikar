@@ -1,18 +1,18 @@
 # Hikar (LocAR.js edition)
 
-**Hikar** is a project to develop an augmented-reality navigation app for walkers. It renders [OpenStreetMap](https://openstreetmap.org) paths, roads and selected points of interest on the device camera feed and also shows virtual signposts at path junctions, showing the direction and distance to nearby points of interest. It is 100% open source and uses no proprietary cloud services; it is based on [LocAR.js](https://github.com/AR-js-org/locar.js) and [three.js](https://threejs.org).
+**Hikar** is a project to develop an augmented-reality navigation app for walkers. It renders [OpenStreetMap](https://openstreetmap.org) paths, roads and selected points of interest on the device camera feed and also shows virtual signposts at path junctions, showing the direction and distance to nearby points of interest. It is 100% open source; it is based on [RDK](https://github.com/omnidotdev/RDK), [LocAR.js](https://github.com/AR-js-org/locar.js) and [three.js](https://threejs.org). It currently uses AWS-provided elevation data, as detailed below, but this is an open, not a proprietary, dataset.
 
 As stated above, data is sourced from OpenStreetMap, but stored in Hikar's own [osm2pgsql](https://osm2pgsql.org) derived PostGIS database rather than being fetched directly from OpenStreetMap servers. 
 
 The intention is for elevation data to be stored locally on Hikar's own server to reduce reliance on third-party services. Much of this data has been created already. However, there are unfortunately some gaps in coverage across Europe and limited server space, so for now the elevaton data is sourced from [**the Terrarium dataset on AWS**](https://registry.opendata.aws/terrain-tiles/), which is an open data set. Self-hosted data, when available, will be sourced from [NASA SRTM](https://earthexplorer.usgs.gov) and [Japan's ALOS](https://www.eorc.jaxa.jp/ALOS/en/dataset/aw3d30/aw3d30_e.htm) for higher latitudes.
 
-Hikar is currently live at [https://hikar.org](hikar.org). Currently the live Hikar server **only provides data in Europe and Turkey** due to server constraints, however the software is capable of working globally. So if you wanted to set up a Hikar server for your own area of the world, you could do using the above data sources.
+Hikar is currently live at [https://hikar.org](hikar.org), though this is a slightly older version than the code on the `main` branch; it reflects the code on the `vanilla-locar` branch. Currently the live Hikar server **only provides data in Europe and Turkey** due to server constraints, however the software is capable of working globally. So if you wanted to set up a Hikar server for your own area of the world, you could do using the above data sources.
 
 ## Background
 
 Hikar was originally implemented as a [native Android app](https://gitlab.com/nickw1/Hikar) and then as a web app using "classic" location-based AR.js and A-Frame (see [old repo](https://github.com/nickw1/hikar.js)).
 
-However with the recent development of [LocAR.js](https://github.com/AR-js-org/locar.js) the decision has been made to re-implement and perform further development the Hikar webapp with LocAR.js and also likely [RDK](https://github.com/omnidotdev/rdk).
+However with the recent development of [LocAR.js](https://github.com/AR-js-org/locar.js) the decision has been made to re-implement and perform further development on the Hikar webapp with LocAR.js and [RDK](https://github.com/omnidotdev/rdk).
 
 As LocAR.js supports iOS while earlier approaches did not, this should be the first version of Hikar to work on iOS devices though no confirmed testing has been done yet. 
 
