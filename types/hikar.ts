@@ -1,7 +1,12 @@
-import { LonLat } from 'locar-tiler';
+
+
 import type { Feature, Position, GeoJsonProperties, Point, LineString, FeatureCollection } from 'geojson';
 import BoundingBox from '../src/BoundingBox';
 import RoutingNetwork from '../src/RoutingNetwork';
+import * as THREE from 'three';
+import type { ThreeEvent } from '@react-three/fiber';
+
+
 
 export interface LayerInfo {
     cols: string;
@@ -24,36 +29,13 @@ export interface OsmEntity {
     type: string;
 }
 
-export interface Poi extends OsmEntity {
-    position: LonLat;
-    altitude: number;
-}
-
-export interface Way extends OsmEntity {
-    coordinates: Array<[number, number, number?]>;
-}
-
-export interface GeoState {
-    pois: Array<Poi>;
-    ways: Array<Way>;
-    elev: number;
-
-}
+export type Poi = Feature<Point>;
+export type Way = Feature<LineString>;
 
 export interface GpsStatus {
     pos: GeolocationPosition;
     distMoved: number;
 };
-
-
-export interface PoiState {
-    pois: Array<Poi>;
-    ways: Array<Way>;
-    elev: number;
-    addPoi: (poi: Poi) => void;
-    addWay: (way: Way) => void;
-    setElev: (newElev: number) => void;
-}
 
 export interface RoutingNetworkOptions {
     poiDistThreshold?: number,
@@ -74,6 +56,7 @@ export interface RouteOptions {
 }
 
 export interface Signpost {
+    jKey: string,
     position: Position,
     arms: { [bearing: number]: SignpostArm }
 };
@@ -102,5 +85,46 @@ export interface Destination {
     weight: number,
     dist: number,
     path: Position[],
-    properties: GeoJsonProperties
+    properties: GeoJsonProperties,
+}
+
+
+export interface ModelProps {
+    scale: number,
+    onClick?: (e: ThreeEvent<THREE.Mesh | THREE.Group>) => void
+}
+
+export interface Geodata {
+    pois: Array<Poi>;
+    ways: Array<Way>;
+    terrains: Array<THREE.Mesh>;
+}
+export interface GeoDataStore {
+    pois: Array<Poi>;
+    ways: Array<Way>;
+    terrains: Array<THREE.Mesh>;
+    signposts: Array<Signpost>;
+    addGeoData: (ways: Array<Way>, pois: Array<Poi>, terrains: Array<THREE.Mesh>) => void;
+    addSignpost: (newSignpost: Signpost) => void;
+    addWays: (ways: Array<Way>) => void;
+    addPois: (pois: Array<Poi>) => void;
+    addTerrains: (terrains: Array<THREE.Mesh>) => void;
+}
+
+export interface HikarMainProps {
+    longitude: number;
+    latitude: number;
+    hFov?: number;
+}
+
+export interface MsgStore {
+    loadingMsg: string;
+    statusMsg: string;
+    setLoadingMsg: (msg: string) => void;
+    setStatusMsg: (msg: string) => void;
+}
+
+export interface AppParams {
+    fakeLon?: string | null;
+    fakeLat?: string | null;
 }

@@ -2,7 +2,7 @@ import turfDistance from '@turf/distance';
 import { point as turfPoint } from '@turf/helpers';
 import { GeoJsonProperties, Position } from 'geojson';
 import PathFinder from 'geojson-path-finder-nw';
-import type { FoundVertex } from '../types';
+import type { FoundVertex } from '../types/hikar'
 
 /*
 

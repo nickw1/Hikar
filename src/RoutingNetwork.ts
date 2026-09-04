@@ -14,7 +14,7 @@ import PathFinder from 'geojson-path-finder-nw';
 import VertexDetector from './VertexDetector';
 import { point as turfPoint } from '@turf/helpers';
 import turfBearing from '@turf/bearing';
-import { RoutablePoi, RoutableWay, RoutingNetworkOptions, RouteOptions, FoundVertex, ReducedEdgeData, Destination, Split, HaversineDistToLineResult } from '../types';
+import { RoutablePoi, RoutableWay, RoutingNetworkOptions, RouteOptions, FoundVertex, ReducedEdgeData, Destination, Split, HaversineDistToLineResult } from '../types/hikar';
 import type { Point, FeatureCollection, GeoJsonProperties, LineString, Position, Feature } from 'geojson';
 
 
@@ -54,7 +54,7 @@ export default class RoutingNetwork {
     // Update with new geojson before attempting to route
     // POIs in the geojson will be inserted into the network, so that they can be routed to.
     update(ways: FeatureCollection<LineString>, poisToInsert: FeatureCollection<Point>) {
-        this.ways = ways;
+        this.ways.features = [...this.ways.features, ...ways.features];
         if (this.ways.features.length > 0) {
             this.insertIntoNetwork(poisToInsert);
             this.pathFinder = new PathFinder(this.ways, {

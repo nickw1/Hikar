@@ -5,7 +5,7 @@ import type { LonLat } from 'locar-tiler';
 import type { Point, FeatureCollection } from 'geojson';
 import { point as turfPoint } from '@turf/helpers';
 import turfBearing from '@turf/bearing';
-import type { SignpostManagerOptions, Signpost, SignpostArm, Destination, RoutablePoi } from '../types';
+import type { SignpostManagerOptions, Signpost, SignpostArm, Destination, RoutablePoi } from '../types/hikar';
 import RoutingNetwork from './RoutingNetwork';
 
 
@@ -70,7 +70,7 @@ class SignpostManager extends EventEmitter {
 
                 const curPoint = turfPoint(j.coords);
 
-                let signpost = { position: j.coords, arms: {} as { [bearing: number]: SignpostArm } };
+                let signpost = { jKey, position: j.coords, arms: {} as { [bearing: number]: SignpostArm } };
                 Object.keys(j.edges)
                     .filter(k => j.edges[k].properties?.isAccessiblePath == true)
                     .forEach(k => {

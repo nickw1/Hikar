@@ -8,7 +8,7 @@ import fetch from 'node-fetch';
 import db from './db';
 
 import MapModel from './models/map';
-import type { LayerKey } from './types';
+import type { LayerKey } from './types/hikar';
 
 const PORT = 3001;
 
@@ -21,7 +21,7 @@ app.get('/dem/:z/:x/:y.png', async (req, res) => {
     try {
         const regExp = /^\d+$/;
         if (regExp.exec(req.params.x) && regExp.exec(req.params.y) && regExp.exec(req.params.z)) {
-          
+
             const filename = `${process.env.TERRARIUM_TILES}/${req.params.z}/${req.params.x}/${req.params.y}.png`;
 
             fs.createReadStream(filename)
@@ -39,6 +39,7 @@ app.get('/dem/:z/:x/:y.png', async (req, res) => {
         }
     } catch (e) {
         res.status(500).json({ error: e });
+
     }
 });
 
@@ -56,6 +57,7 @@ app.get('/dem/aws/:z/:x/:y.png', async (req, res) => {
         res.status(500).json({ error: e });
     }
 });
+
 
 
 // Fake the (very) old endpoint - necessary for the Hikar app to keep working
