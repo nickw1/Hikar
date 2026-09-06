@@ -40,9 +40,9 @@ export default function App({ fakeLat, fakeLon }: AppParams) {
                     fakeLat: fakeLat === undefined || fakeLat === null ? undefined : parseFloat(fakeLat),
                     fakeLon: fakeLon === undefined || fakeLon === null ? undefined : parseFloat(fakeLon),
                     onGpsUpdate: (pos, distMoved) => {
-                        console.log(`got a gps pos: ${pos.coords.longitude} ${pos.coords.latitude}, distMoved = ${distMoved}`);
+                        //console.log(`got a gps pos: ${pos.coords.longitude} ${pos.coords.latitude}, distMoved = ${distMoved}`);
                         if (distMoved > 5) {
-                            console.log("setting lon/lat, should trigger render...");
+                           // console.log("setting lon/lat, should trigger render...");
                             setLonLat(pos.coords);
                         }
                     }
