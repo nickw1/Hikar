@@ -14,9 +14,16 @@ import { LocAR, LonLat } from 'locar';
 import { RoutablePoi, RoutableWay, Signpost, HikarMainProps } from '../../types/hikar';
 import BoundingBox from '../BoundingBox';
 import * as THREE from 'three';
+import Tree from './basicModels/Tree';
+import Marker from './basicModels/Marker';
 
 
-export default function HikarMain({ longitude, latitude, hFov = 80 }: HikarMainProps) {
+type CameraFeedDimensions = {
+    landWidth: number;
+    landHeight: number;
+}
+
+export default function HikarMain({ longitude, latitude }: HikarMainProps) {
 
 
     const addGeoData = useStore((state) => state.addGeoData);
@@ -24,7 +31,7 @@ export default function HikarMain({ longitude, latitude, hFov = 80 }: HikarMainP
     const setLoadingMsg = useMsgStore((state) => state.setLoadingMsg);
     const setStatusMsg = useMsgStore((state) => state.setStatusMsg);
 
-    const { updateTiler, getElevation, getDataForTile } = useTiler("/dem/{z}/{x}/{y}.png", "https://hikar.org/map/{z}/{x}/{y}.json?outProj=4326&");
+    const { updateTiler, getElevation, getDataForTile } = useTiler("/dem/{z}/{x}/{y}.png", "/map/{z}/{x}/{y}.json?outProj=4326&");
     const { updateRoutingNetwork, addRoutablePoi, findSignpostAtLonLat } = useRouting({
         juncDistThreshold: 0.05
     });
@@ -38,21 +45,15 @@ export default function HikarMain({ longitude, latitude, hFov = 80 }: HikarMainP
     const noAccess = ["private", "no"];
 
     const { locar } = useGeolocationBackend();
-    const { camera, gl } = useThree();
+    const { camera, size } = useThree();
 
     useEffect(() => {
         onPosUpdated({ longitude, latitude });
     }, [longitude, latitude]);
 
 
-
-    useEffect(() => {
-        (camera as THREE.PerspectiveCamera).fov = hFov * (gl.domElement.height / gl.domElement.width);
-        camera.updateProjectionMatrix();
-    }, [hFov]);
-
-
     console.log("Rendering HikarMain");
+
 
     return (
         <GeoDataRenderer />

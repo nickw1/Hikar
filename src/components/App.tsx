@@ -13,7 +13,7 @@ import { useMsgStore } from '../hooks/useMsgStore';
 export default function App({ fakeLat, fakeLon }: AppParams) {
 
     // Fake location used for initial testing
-    // const START_POS = { lat: 51.051384, lon: -0.728487 };
+    const START_POS = { lat: 51.051384, lon: -0.728487 };
 
     const [lonLat, setLonLat] = useState<LonLat | null>(null);
 
@@ -31,18 +31,20 @@ export default function App({ fakeLat, fakeLon }: AppParams) {
             top: "0px",
             left: "0px",
             zIndex: 1
-        }} camera={{ fov: 60, near: 0.001, far: 4000 }}>
+        }} camera={{ fov: 60, near: 0.001, far: 4000 }} dpr={1}>
             <ambientLight intensity={1.0} />
             <directionalLight position={[10, 10, 10]} intensity={2} />
 
             <XR>
                 <GeolocationSession options={{
-                    fakeLat: fakeLat === undefined || fakeLat === null ? undefined : parseFloat(fakeLat),
-                    fakeLon: fakeLon === undefined || fakeLon === null ? undefined : parseFloat(fakeLon),
+                 //   fakeLat: fakeLat === undefined || fakeLat === null ? undefined : parseFloat(fakeLat),
+                 //   fakeLon: fakeLon === undefined || fakeLon === null ? undefined : parseFloat(fakeLon),
+                    fakeLat: START_POS.lat,
+                    fakeLon: START_POS.lon,
                     onGpsUpdate: (pos, distMoved) => {
-                        console.log(`got a gps pos: ${pos.coords.longitude} ${pos.coords.latitude}, distMoved = ${distMoved}`);
+                        //console.log(`got a gps pos: ${pos.coords.longitude} ${pos.coords.latitude}, distMoved = ${distMoved}`);
                         if (distMoved > 5) {
-                            console.log("setting lon/lat, should trigger render...");
+                           // console.log("setting lon/lat, should trigger render...");
                             setLonLat(pos.coords);
                         }
                     }
