@@ -13,7 +13,7 @@ import { useMsgStore } from '../hooks/useMsgStore';
 export default function App({ fakeLat, fakeLon }: AppParams) {
 
     // Fake location used for initial testing
-    // const START_POS = { lat: 51.051384, lon: -0.728487 };
+    const START_POS = { lat: 51.051384, lon: -0.728487 };
 
     const [lonLat, setLonLat] = useState<LonLat | null>(null);
 
@@ -37,8 +37,10 @@ export default function App({ fakeLat, fakeLon }: AppParams) {
 
             <XR>
                 <GeolocationSession options={{
-                    fakeLat: fakeLat === undefined || fakeLat === null ? undefined : parseFloat(fakeLat),
-                    fakeLon: fakeLon === undefined || fakeLon === null ? undefined : parseFloat(fakeLon),
+                   // fakeLat: fakeLat === undefined || fakeLat === null ? undefined : parseFloat(fakeLat),
+                    //fakeLon: fakeLon === undefined || fakeLon === null ? undefined : parseFloat(fakeLon),
+                    fakeLat: START_POS.lat,
+                    fakeLon: START_POS.lon,
                     onGpsUpdate: (pos, distMoved) => {
                         //console.log(`got a gps pos: ${pos.coords.longitude} ${pos.coords.latitude}, distMoved = ${distMoved}`);
                         if (distMoved > 5) {
