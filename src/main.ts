@@ -82,9 +82,16 @@ try {
 
 
   locar.on("gpsupdate", onGpsUpdate);
-  //locar.startGps();
+
+  const searchParams = new URLSearchParams(window.location.search);
+  const lat = searchParams.get("lat"), lon = searchParams.get("lon");
   
-  locar.fakeGps(-0.728487, 51.051384);
+  if (lat !== null && lon !== null) {
+    locar.fakeGps(parseFloat(lon), parseFloat(lat));
+  } else {
+    locar.startGps();
+  }
+
 
   locar.on("gpserror", (ev: GeolocationPositionError) => {
     alert(`GPS error: ${gpsErrorCodes[ev.code + 1] ?? "Unknown GPS error"}`);
