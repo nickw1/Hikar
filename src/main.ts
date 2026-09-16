@@ -82,8 +82,9 @@ try {
 
 
   locar.on("gpsupdate", onGpsUpdate);
-  locar.startGps();
-  //locar.fakeGps(-0.728487, 51.051384);
+  //locar.startGps();
+  
+  locar.fakeGps(-0.728487, 51.051384);
 
   locar.on("gpserror", (ev: GeolocationPositionError) => {
     alert(`GPS error: ${gpsErrorCodes[ev.code + 1] ?? "Unknown GPS error"}`);
