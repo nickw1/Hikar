@@ -1,4 +1,4 @@
-# Hikar (LocAR.js edition)
+# Hikar (LocAR.js/RDK edition)
 
 **Hikar** is a project to develop an augmented-reality navigation app for walkers. It renders [OpenStreetMap](https://openstreetmap.org) paths, roads and selected points of interest on the device camera feed and also shows virtual signposts at path junctions, showing the direction and distance to nearby points of interest. It is 100% open source; it is based on [RDK](https://github.com/omnidotdev/RDK), [LocAR.js](https://github.com/AR-js-org/locar.js) and [three.js](https://threejs.org). It currently uses AWS-provided elevation data, as detailed below, but this is an open, not a proprietary, dataset.
 
@@ -19,6 +19,10 @@ As LocAR.js supports iOS while earlier approaches did not, this should be the fi
 Currently live at [hikar.org](https://hikar.org) - will only work in Europe and Turkey due to data coverage. Not optimised for urban areas, recommended for use in suburban and rural areas.
 
 The project is intended also to be used as a test for future ideas and development such as SLAM integration (e.g. [AlvaAR](https://github.com/alanross/AlvaAR)).
+
+## IMPORTANT - RDK version
+
+This branch is the *RDK version*, making use of [RDK](https://github.com/omnidotdev/rdk). Please note that it relies on functionality not yet in the official release of RDK; you need to clone [this fork](https://github.com/nickw1/rdk) and use the `fov-match-camera` branch. Build this version of RDK and edit the dependency in `package.json` to point to your own local installation of the RDK fork.
 
 ## Current status
 
