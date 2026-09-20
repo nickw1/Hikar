@@ -22,7 +22,7 @@ The project is intended also to be used as a test for future ideas and developme
 
 ## IMPORTANT - RDK version
 
-This branch is the *RDK version*, making use of [RDK](https://github.com/omnidotdev/rdk). Please note that it relies on functionality not yet in the official release of RDK; you need to clone [this fork](https://github.com/nickw1/rdk) and use the `fov-match-camera` branch. Build this version of RDK and edit the dependency in `package.json` to point to your own local installation of the RDK fork.
+This branch is the *RDK version*, making use of [RDK](https://github.com/omnidotdev/rdk). 
 
 ## Current status
 

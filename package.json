@@ -2,7 +2,7 @@
   "name": "Hikar",
   "type": "module",
   "dependencies": {
-    "@omnidotdev/rdk": "file:../rdk/packages/rdk",
+    "@omnidotdev/rdk": "^0.14.0",
     "@react-three/drei": "^10.7.8",
     "@turf/bearing": "^7.3.5",
     "express": "^5.2.1",
