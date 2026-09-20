@@ -11,7 +11,6 @@ export default function LoadingMsg() {
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            fontSize: '200%',
             backgroundColor: 'rgba(255, 255, 255, 0)',
             width: "100%",
             position: "absolute",
@@ -19,7 +18,7 @@ export default function LoadingMsg() {
             left: "0px",
             zIndex: 2
         }}>
-            <h1 style={{ color: 'rgba(192, 192, 255, 1)' }}>{loadingMsg}</h1>
+            <h1 style={{ color: 'white' }}>{loadingMsg}</h1>
         </div>
     )
 }

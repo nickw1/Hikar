@@ -70,7 +70,7 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
             const newData = await updateTiler(pos);
             const elev = getElevation(pos) ?? 0;
             console.log(`elev: ${elev}`);
-            setStatusMsg(`Lat: ${pos.latitude.toFixed(2)} Lon: ${pos.longitude.toFixed(2)} Elev: ${Math.round(elev)}m`);
+            setStatusMsg(`Lat: ${pos.latitude.toFixed(3)} Lon: ${pos.longitude.toFixed(3)} Elev: ${Math.round(elev)}m`);
             camera.position.setY(elev + 2);
             if (newData.length > 0) {
                 setLoadingMsg("Rendering data...");
