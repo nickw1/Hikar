@@ -84,8 +84,12 @@ try {
   locar.on("gpsupdate", onGpsUpdate);
 
   const searchParams = new URLSearchParams(window.location.search);
-  const lat = searchParams.get("lat"), lon = searchParams.get("lon");
-  
+  let lat = searchParams.get("lat"), lon = searchParams.get("lon");
+  if(searchParams.get("t")) {
+    lat = "51.051384";
+    lon = "-0.728487";
+  }
+
   if (lat !== null && lon !== null) {
     locar.fakeGps(parseFloat(lon), parseFloat(lat));
   } else {
