@@ -85,7 +85,7 @@ try {
 
   const searchParams = new URLSearchParams(window.location.search);
   let lat = searchParams.get("lat"), lon = searchParams.get("lon");
-  if(searchParams.get("t")) {
+  if (searchParams.get("t")) {
     lat = "51.051384";
     lon = "-0.728487";
   }
@@ -173,7 +173,10 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
 
     setMsg("", "loadMsg");
 
-    locar!.setElevation(demTiler!.getElevationFromLonLat(lonLat) + 2);
+    const elev = demTiler!.getElevationFromLonLat(lonLat);
+    if (elev > Number.NEGATIVE_INFINITY) {
+      locar!.setElevation(elev + 2);
+    }
 
     for (let dataTile of newTiles) {
       const tileKey = dataTile.tile.getIndex();
