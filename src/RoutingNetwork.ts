@@ -12,6 +12,7 @@
 import { LocAR } from 'locar';
 import PathFinder from 'geojson-path-finder-nw';
 import VertexDetector from './VertexDetector';
+import BoundingBox from './BoundingBox';
 import { point as turfPoint } from '@turf/helpers';
 import turfBearing from '@turf/bearing';
 import { RoutablePoi, RoutableWay, RoutingNetworkOptions, RouteOptions, FoundVertex, ReducedEdgeData, Destination, Split, HaversineDistToLineResult } from '../types/hikar';
@@ -238,7 +239,7 @@ export default class RoutingNetwork {
         pois.features.forEach(p => {
             const poi = p as RoutablePoi;
             console.log(`insertIntoNetwork(): poi name = ${p.properties!.name}`);
-            (this.ways.features as RoutableWay[]).filter(way => way.boundingBox!.contains(poi.geometry.coordinates)).forEach(way => {
+            (this.ways.features as RoutableWay[]).filter(way => BoundingBox.contains(way.boundingBox!, poi.geometry.coordinates)).forEach(way => {
 
                 let lowestDist: HaversineDistToLineResult = { distance: Number.MAX_VALUE, proportion: 0, intersection: null }, idx = -1, curDist;
                 for (let j = 0; j < way.geometry.coordinates.length - 1; j++) {

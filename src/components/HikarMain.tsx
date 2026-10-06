@@ -33,7 +33,16 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
 
     const { updateTiler, getElevation, getDataForTile } = useTiler("/dem/{z}/{x}/{y}.png", "/map/{z}/{x}/{y}.json?outProj=4326&");
     const { updateRoutingNetwork, addRoutablePoi, findSignpostAtLonLat } = useRouting({
-        juncDistThreshold: 0.05
+        routingNetworkOptions: {
+            juncDistThreshold: 0.05
+        },
+        onDataUpdated: () => { setLoadingMsg("")}, onSignpostFound: (signpost: Signpost | null) => {
+            if (signpost !== null) {
+                console.log("triggering render of signpost");
+                addSignpost(signpost);
+                printSignpost(signpost);
+            }
+        }
     });
     const { addIndexedFeature, indexedFeatures } = useIndexedFeatures();
 
@@ -187,12 +196,14 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
                 console.log("triggering render of geodata");
                 addGeoData(ways, pois, terrains);
             }
-            const signpost = findSignpostAtLonLat(pos);
-            if (signpost !== null) {
-                console.log("triggering render of signpost");
-                addSignpost(signpost);
-                printSignpost(signpost);
-            }
+            findSignpostAtLonLat(pos);
+            /*
+           if (signpost !== null) {
+               console.log("triggering render of signpost");
+               addSignpost(signpost);
+               printSignpost(signpost);
+           }
+               */
             setLoadingMsg("");
         }
 
