@@ -5,25 +5,32 @@ import { useRef, useEffect } from 'react';
 import type { LonLat } from 'locar';
 import type { FeatureCollection, Point, LineString } from 'geojson';
 
-export default function useRouting(options: { routingNetworkOptions: RoutingNetworkOptions, onDataUpdated: () => void, onSignpostFound: (signpost: Signpost | null) => void}) {
+export default function useRouting(options: {
+    routingNetworkOptions: RoutingNetworkOptions, 
+    onDataUpdated: () => void, 
+    onSignpostFound: (signpost: Signpost | null) => void,
+    onProcessingStarted: () => void
+}) {
 
     let worker: Worker | null = null;
 
     useEffect(() => {
-      
-        worker = new Worker(new URL("../worker.ts", import.meta.url), { type: 'module'});
+
+        worker = new Worker(new URL("../worker.ts", import.meta.url), { type: 'module' });
         //  routingNetwork.current = new RoutingNetwork(options);
         //  signpostManager.current = new SignpostManager({ routingNetwork: routingNetwork.current })
 
         worker.onmessage = e => {
-       
-            switch(e.data.type) {
+
+            switch (e.data.type) {
                 case 'dataUpdated':
                     options.onDataUpdated();
                     break;
                 case 'checkJunctionFinished':
                     options.onSignpostFound(e.data.data);
                     break;
+                case 'startProcessing':
+                    options.onProcessingStarted();
             }
         };
 
@@ -33,7 +40,7 @@ export default function useRouting(options: { routingNetworkOptions: RoutingNetw
 
     return {
         updateRoutingNetwork: (allWaysForRouting: FeatureCollection<LineString>, newRoutablePois: FeatureCollection<Point>) => {
-           
+
             // routingNetwork.current?.update(allWaysForRouting, newRoutablePois);
             worker?.postMessage({ type: "updateData", data: { ways: allWaysForRouting, pois: newRoutablePois } });
         },

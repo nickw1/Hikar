@@ -36,7 +36,10 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
         routingNetworkOptions: {
             juncDistThreshold: 0.05
         },
-        onDataUpdated: () => { setLoadingMsg("")}, onSignpostFound: (signpost: Signpost | null) => {
+        onProcessingStarted: () => { setLoadingMsg("Processing data for routing...") },
+        onDataUpdated: () => { setLoadingMsg("")}, 
+        onSignpostFound: (signpost: Signpost | null) => {
+             setLoadingMsg("");
             if (signpost !== null) {
                 console.log("triggering render of signpost");
                 addSignpost(signpost);
@@ -196,6 +199,7 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
                 console.log("triggering render of geodata");
                 addGeoData(ways, pois, terrains);
             }
+            setLoadingMsg("Checking for signposts...");
             findSignpostAtLonLat(pos);
             /*
            if (signpost !== null) {

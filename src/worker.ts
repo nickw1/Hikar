@@ -18,7 +18,7 @@ onmessage = e => {
             break;
 
         case 'checkJunction':
-            console.log('worker received checkJunction msg')
+        
             if (sMgr !== null) {
                 const sign = sMgr.updatePos(e.data.data);
                 postMessage({ type: 'checkJunctionFinished', data: sign });
@@ -32,7 +32,9 @@ onmessage = e => {
                 routingNetwork,
             //    juncDetectDistChange: e.data.data.juncDetectDistChange
             });
-            sMgr.on("startProcessing", e => { })
+            sMgr.on("startProcessing", e => { 
+                postMessage({type: "startProcessing"});
+            })
             break;
 
         case 'addRoutablePoi':
