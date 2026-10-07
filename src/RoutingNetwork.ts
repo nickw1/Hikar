@@ -84,10 +84,10 @@ export default class RoutingNetwork {
     // is a given point a junction?
     // will trigger routing for some applications, e.g. Hikar
     findJunction(p: Position): FoundVertex | null {
-        console.log(`findJunction at ${p}`);
+        //console.log(`findJunction at ${p}`);
         if (this.vDet) {
             const junc = this.vDet.findNearestVertex(p, true);
-            console.log(`Junc at ${junc.distance} `);
+            //console.log(`Junc at ${junc.distance} `);
             return junc.distance < this.juncDistThreshold ? junc : null;
         }
         return null;
@@ -100,7 +100,7 @@ export default class RoutingNetwork {
     route(curPt: Position, targetPois: FeatureCollection<Point>, options: RouteOptions = { snapPois: false, snapToJunction: false }) {
         if (!this.vDet) return [];
 
-        console.log(`routing from ${curPt}`)
+        //console.log(`routing from ${curPt}`)
         // NEW - once we've created the graph, snap the current and nearby panos to the nearest junction within 5m, if there is one
         let snappedStartNode: Feature<Point> = {
             "type": "Feature",
@@ -118,7 +118,7 @@ export default class RoutingNetwork {
             "properties": {}
         };
 
-        console.log(`Have ${targetPois.features.length} POIs to route to`);
+        //console.log(`Have ${targetPois.features.length} POIs to route to`);
         (targetPois.features as RoutablePoi[]).forEach(targetPoi => {
 
             if (targetPoi.properties?.name !== undefined && ([
@@ -139,7 +139,7 @@ export default class RoutingNetwork {
 
                 targetPoi.bearing = 720;
 
-                console.log(`Routing to potential target ${targetPoi.properties!.name}`);
+                //console.log(`Routing to potential target ${targetPoi.properties!.name}`);
 
                 snappedEndNode.geometry.coordinates = options.snapPois ? this.vDet!.snapToVertex(targetPoi.geometry.coordinates, this.poiDistThreshold, false) : targetPoi.geometry.coordinates;
 
@@ -147,7 +147,7 @@ export default class RoutingNetwork {
                 if (route != null && route.edgeDatas !== undefined && route.edgeDatas.length >= 1 && route.path.length >= 2 && route.edgeDatas[0]!.isAccessiblePath) {
                     // calculate the real distance of the path (weight is now
                     // adjusted - see above)
-                    console.log('We have a route..');
+                    //console.log('We have a route..');
                     const dist = route.path.reduce((acc, val, index, arr) => {
                         return index == 0 ? 0 : acc + LocAR.haversineDist({
                             longitude: val[0],
@@ -238,7 +238,7 @@ export default class RoutingNetwork {
 
         pois.features.forEach(p => {
             const poi = p as RoutablePoi;
-            console.log(`insertIntoNetwork(): poi name = ${p.properties!.name}`);
+            //console.log(`insertIntoNetwork(): poi name = ${p.properties!.name}`);
             (this.ways.features as RoutableWay[]).filter(way => BoundingBox.contains(way.boundingBox!, poi.geometry.coordinates)).forEach(way => {
 
                 let lowestDist: HaversineDistToLineResult = { distance: Number.MAX_VALUE, proportion: 0, intersection: null }, idx = -1, curDist;
@@ -255,7 +255,7 @@ export default class RoutingNetwork {
 
 
                 if (idx >= 0 && lowestDist.distance < 100.0) {
-                    console.log(`Way ${way.properties!.hikar_id} is near this POI`);
+                    // console.log(`Way ${way.properties!.hikar_id} is near this POI`);
                     // it has to be within 10m of a way 
                     // We don't yet actually try and split the way though
                     // We need to ensure the POI is inserted into the
@@ -282,7 +282,7 @@ export default class RoutingNetwork {
                         }
                     }
                     if (poi.split !== null) {
-                        console.log(`Split: ${poi.split.distance} ${poi.split.idx} ${poi.split.intersection}`);
+                        //console.log(`Split: ${poi.split.distance} ${poi.split.idx} ${poi.split.intersection}`);
                     }
                 }
             });
@@ -310,7 +310,7 @@ export default class RoutingNetwork {
             let splits = allSplits[way.properties!.hikar_id];
             // this was originally in the ways loop
             if (splits && splits.length > 0) {
-                console.log(`Splitting this way ${way.properties!.hikar_id}`);
+                //console.log(`Splitting this way ${way.properties!.hikar_id}`);
                 splits = splits.sort((a, b) => a.idx - b.idx);
                 let splitIdx = 0;
                 const newWay: RoutableWay = RoutingNetwork.makeNewWay(way);
