@@ -13,6 +13,7 @@ onmessage = e => {
           
             if (routingNetwork !== null) {
                 routingNetwork.update(e.data.data.ways, e.data.data.pois);
+                console.log("worker: data updated");
                 postMessage({ type: 'dataUpdated' });
             }
             break;
@@ -32,9 +33,6 @@ onmessage = e => {
                 routingNetwork,
             //    juncDetectDistChange: e.data.data.juncDetectDistChange
             });
-            sMgr.on("startProcessing", e => { 
-                postMessage({type: "startProcessing"});
-            })
             break;
 
         case 'addRoutablePoi':

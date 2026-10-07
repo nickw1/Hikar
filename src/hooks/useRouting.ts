@@ -6,33 +6,32 @@ import type { LonLat } from 'locar';
 import type { FeatureCollection, Point, LineString } from 'geojson';
 
 export default function useRouting(options: {
-    routingNetworkOptions: RoutingNetworkOptions, 
-    onDataUpdated: () => void, 
-    onSignpostFound: (signpost: Signpost | null) => void,
-    onProcessingStarted: () => void
+    routingNetworkOptions: RoutingNetworkOptions,
+    onDataUpdated: () => void,
+    onSignpostFound: (signpost: Signpost | null) => void
 }) {
 
     let worker: Worker | null = null;
 
     useEffect(() => {
 
-        worker = new Worker(new URL("../worker.ts", import.meta.url), { type: 'module' });
-        //  routingNetwork.current = new RoutingNetwork(options);
-        //  signpostManager.current = new SignpostManager({ routingNetwork: routingNetwork.current })
+        if (!worker) {
+            worker = new Worker(new URL("../worker.ts", import.meta.url), { type: 'module' });
+            //  routingNetwork.current = new RoutingNetwork(options);
+            //  signpostManager.current = new SignpostManager({ routingNetwork: routingNetwork.current })
 
-        worker.onmessage = e => {
+            worker.onmessage = e => {
 
-            switch (e.data.type) {
-                case 'dataUpdated':
-                    options.onDataUpdated();
-                    break;
-                case 'checkJunctionFinished':
-                    options.onSignpostFound(e.data.data);
-                    break;
-                case 'startProcessing':
-                    options.onProcessingStarted();
-            }
-        };
+                switch (e.data.type) {
+                    case 'dataUpdated':
+                        options.onDataUpdated();
+                        break;
+                    case 'checkJunctionFinished':
+                        options.onSignpostFound(e.data.data);
+                        break;
+                }
+            };
+        }
 
         worker.postMessage({ type: "createObjects", "data": { routingNetworkOptions: options.routingNetworkOptions } });
 

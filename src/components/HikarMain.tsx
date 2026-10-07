@@ -14,8 +14,6 @@ import { LocAR, LonLat } from 'locar';
 import { RoutablePoi, RoutableWay, Signpost, HikarMainProps } from '../../types/hikar';
 import BoundingBox from '../BoundingBox';
 import * as THREE from 'three';
-import Tree from './basicModels/Tree';
-import Marker from './basicModels/Marker';
 
 
 type CameraFeedDimensions = {
@@ -36,10 +34,12 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
         routingNetworkOptions: {
             juncDistThreshold: 0.05
         },
-        onProcessingStarted: () => { setLoadingMsg("Processing data for routing...") },
-        onDataUpdated: () => { setLoadingMsg("")}, 
+        onDataUpdated: () => {
+            setLoadingMsg("Checking for signposts...");
+            findSignpostAtLonLat(lastPos.current);
+        },
         onSignpostFound: (signpost: Signpost | null) => {
-             setLoadingMsg("");
+            setLoadingMsg("");
             if (signpost !== null) {
                 console.log("triggering render of signpost");
                 addSignpost(signpost);
@@ -198,9 +198,10 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
                 updateRoutingNetwork(waysForRouting, poisForRouting);
                 console.log("triggering render of geodata");
                 addGeoData(ways, pois, terrains);
+            } else {
+                setLoadingMsg("Checking for signposts...");
+                findSignpostAtLonLat(pos);
             }
-            setLoadingMsg("Checking for signposts...");
-            findSignpostAtLonLat(pos);
             /*
            if (signpost !== null) {
                console.log("triggering render of signpost");
@@ -208,7 +209,7 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
                printSignpost(signpost);
            }
                */
-            setLoadingMsg("");
+
         }
 
     }
