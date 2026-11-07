@@ -108,6 +108,7 @@ try {
 }
 
 
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('svcw.js')
     .then(registration => {
@@ -128,12 +129,14 @@ if ('serviceWorker' in navigator) {
 }
 
 
+
 function setMsg(msg: string, elementId: string = "msg") {
   document.getElementById(elementId)!.innerHTML = msg;
 }
 
 function showLocation(lonLat: LonLat) {
-  setMsg(`Lon ${lonLat.longitude.toFixed(3)} lat ${lonLat.latitude.toFixed(3)} ${demTiler === null ? "" : `elev: ${Math.round(demTiler.getElevationFromLonLat(lonLat))}m`}`);
+  const elev = demTiler?.getElevationFromLonLat(lonLat) ?? null;
+  setMsg(`Lon ${lonLat.longitude.toFixed(3)} lat ${lonLat.latitude.toFixed(3)} elev: ${elev === null ? "Unknown" : `${Math.round(elev)}m`}`);
 }
 
 function handleLineMaterial(hwy: string): THREE.Material {
@@ -174,7 +177,7 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
     setMsg("", "loadMsg");
 
     const elev = demTiler!.getElevationFromLonLat(lonLat);
-    if (elev > Number.NEGATIVE_INFINITY) {
+    if (elev !== null) {
       locar!.setElevation(elev + 2);
     }
 

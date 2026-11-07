@@ -10,7 +10,7 @@
     "express": "^5.2.1",
     "geojson-path-finder-nw": "2.1.0",
     "locar": "^0.2.12",
-    "locar-tiler": "^0.9.0",
+    "locar-tiler": "^0.10.0",
     "node-fetch": "^3.3.2",
     "pg": "^8.20.0",
     "troika-three-text": "^0.52.4",
