@@ -108,7 +108,7 @@ try {
 }
 
 
-
+/*
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('svcw.js')
     .then(registration => {
@@ -127,6 +127,7 @@ if ('serviceWorker' in navigator) {
       console.error(`Service worker registration failed: ${e}`);
     });
 }
+*/
 
 
 
