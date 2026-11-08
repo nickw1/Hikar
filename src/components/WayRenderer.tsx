@@ -10,7 +10,8 @@ type AllWayAttributes = { [type: string]: WayAttributes };
 const MemoisedLine = memo(
     function memoisedLine({ way, attrs }: { way: Way, attrs: AllWayAttributes }) {
         return (
-            <GeoLine key={`${way.properties!.hikar_id}`}  coordinates={way.geometry.coordinates as Array<[number, number, number]>} color={attrs[way.properties!.type]?.colour ?? 'lightgray'} lineWidth={attrs[way.properties!.type]?.width ?? 2} opacity={0.7} />
+            <GeoLine key={`${way.properties!.hikar_id}`}  coordinates={way.geometry.coordinates as Array<[number, number, number]>} color={attrs[way.properties!.type]?.colour ?? 'lightgray'} lineWidth={attrs[way.properties!.type]?.width ?? 2} opacity={0.7} 
+            onPointerDown={() => alert(`${way.properties?.type ?? 'unknown way type'}`)}/>
         );
     }
 );
