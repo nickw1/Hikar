@@ -1,6 +1,6 @@
 
 import { memo, useRef, useEffect } from 'react';
-import { GeoLine } from '@omnidotdev/rdk/geolocation';
+import  GeoLine  from './GeoLine'; //@omnidotdev/rdk/geolocation';
 import type { Way } from '../../types/hikar';
 import { useStore } from '../hooks/useStore';
 
@@ -10,7 +10,7 @@ type AllWayAttributes = { [type: string]: WayAttributes };
 const MemoisedLine = memo(
     function memoisedLine({ way, attrs }: { way: Way, attrs: AllWayAttributes }) {
         return (
-            <GeoLine key={`${way.properties!.hikar_id}`} coordinates={way.geometry.coordinates as Array<[number, number, number]>} color={attrs[way.properties!.type]?.colour ?? 'lightgray'} lineWidth={attrs[way.properties!.type]?.width ?? 2} opacity={0.7} />
+            <GeoLine key={`${way.properties!.hikar_id}`} wayType={way.properties!.type ?? 'unknown'} coordinates={way.geometry.coordinates as Array<[number, number, number]>} color={attrs[way.properties!.type]?.colour ?? 'lightgray'} lineWidth={attrs[way.properties!.type]?.width ?? 2} opacity={0.7} />
         );
     }
 );
@@ -22,9 +22,9 @@ export default function WayRenderer() {
     const ways = useStore((state) => state.ways);
 
     useEffect(() => {
-        wayColours.current["footway"] = { colour: "green", width: 2 };
-        wayColours.current["path"] = { colour: "green", width: 2 };
-        wayColours.current["public_footpath"] = { colour: "green", width: 2 };
+        wayColours.current["footway"] = { colour: "#00ff00", width: 2 };
+        wayColours.current["path"] = { colour: "#00ff00", width: 2 };
+        wayColours.current["public_footpath"] = { colour: "#00ff00", width: 2 };
         wayColours.current["bridleway"] = { colour: "#aa5500", width: 2 };
         wayColours.current["public_bridleway"] = { colour: "#aa5500", width: 2 };
         wayColours.current["byway"] = { colour: "red", width: 2 };
