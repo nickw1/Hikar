@@ -124,6 +124,13 @@ export interface MsgStore {
     setStatusMsg: (msg: string) => void;
 }
 
+export type MaterialMap = { [materialKey: string]: THREE.Material };
+
+export interface MaterialStore {
+    materialStore: MaterialMap,
+    addMaterial: (key: string, value: THREE.Material ) => void
+}
+
 export interface AppParams {
     fakeLon?: string | null;
     fakeLat?: string | null;

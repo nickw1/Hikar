@@ -22,12 +22,14 @@ import type { ThreeEvent } from "@react-three/fiber";
 import type { LocAR } from "locar";
 import type { ColorRepresentation } from "three";
 
-import { cachedMaterials } from "../cachedMaterials";
+import { Color } from 'three';
+
+//import { cachedMaterials } from "../cachedMaterials";
+import { useMaterialStore } from '../hooks/useMaterialStore';
 
 export interface GeoLineProps {
     /** Array of coordinates forming the line. GeoJSON-style: [lon, lat, elevation?] */
     coordinates: Array<[number, number, number?]>;
-    wayType: string,
     /**
      * Line color.
      * @default "#ff0000"
@@ -141,7 +143,6 @@ const buildTriStripGeometry = (vertices: Vector3[], width: number) => {
  */
 const GeoLine = ({
     coordinates,
-    wayType,
     color = "#ff0000",
     isDashed = false,
     dashSize = 3,
@@ -156,7 +157,8 @@ const GeoLine = ({
     const geoRef = useRef(geo);
     geoRef.current = geo;
 
-   
+    //const materialStore = useMaterialStore(state => state.materialStore);
+    const addMaterial = useMaterialStore(state => state.addMaterial);
 
     const [anchor] = useState(() => new Group());
     const anchorId = useMemo(() => Math.random().toString(36).slice(2, 11), []);
@@ -199,18 +201,23 @@ const GeoLine = ({
                 lineObj.computeLineDistances();
                 setLine(lineObj);
             } else {
+                const wayType = `${color.toString()}:${opacity.toFixed(2)}`;
                 const geometry = buildTriStripGeometry(pts, lineWidth);
                 let material = null;
-                if (cachedMaterials[wayType] !== undefined) {
-                    material = cachedMaterials[wayType];
+                const materialStore = useMaterialStore.getState().materialStore;
+                console.log('material store keys: ', Object.keys(materialStore));
+                if (materialStore[wayType] !== undefined) {
+                    console.log(`Found material with type ${wayType}`);
+                    material = materialStore[wayType];
                 } else {
+                    console.log(`**** New material: type ${wayType}`);
                     material = new MeshBasicMaterial({
                         color,
                         transparent: opacity < 1,
                         opacity,
                         side: DoubleSide,
                     });
-                    cachedMaterials[wayType] = material;
+                    addMaterial(wayType, material);
                 }
                 setLine(new Mesh(geometry, material));
             }
@@ -250,7 +257,6 @@ const GeoLine = ({
         opacity,
         geo.isSuccess,
     ]);
-
     return createPortal(
         // biome-ignore lint/a11y/noStaticElementInteractions: <group> is an R3F WebGL scene object, not a DOM element; these are three.js raycast events with no a11y semantics
         <group
