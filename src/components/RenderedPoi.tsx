@@ -25,23 +25,23 @@ export default function RenderedPoi({ poi }: { poi: Poi }) {
     switch (poi.properties!.type) {
         case "pub":
         case "bar":
-            element = <Glass scale={4} onClick={clickHandler} />;
+            element = <Glass scale={4} onPointerDown={clickHandler} />;
             break;
         case "cafe":
-            element = <Cup scale={4} onClick={clickHandler} />;
+            element = <Cup scale={4} onPointerDown={clickHandler}/>;
             break;
         case "tree":
-            element = <Tree scale={4} onClick={clickHandler} />;
+            element = <Tree scale={4} onPointerDown={clickHandler}/>;
             break;
         case "peak":
-            element = <mesh scale={4} onClick={clickHandler}><coneGeometry args={[8, 24]} /><meshStandardMaterial color={0xff00ff} /></mesh>;
+            element = <mesh scale={4} onPointerDown={clickHandler}><coneGeometry args={[8, 24]} /><meshStandardMaterial color={0xff00ff} /></mesh>;
             break;
         case "shop":
         case "building":
-            element = <Building scale={4} id={`bldg-${poi.properties!.hikar_id}`} onClick={clickHandler} />;
+            element = <Building scale={4} id={`bldg-${poi.properties!.hikar_id}`} onPointerDown={clickHandler}/>;
             break;
         default:
-            element = <Marker scale={4} onClick={clickHandler} />;
+            element = <Marker scale={4} onPointerDown={clickHandler}/>;
     }
 
     return (

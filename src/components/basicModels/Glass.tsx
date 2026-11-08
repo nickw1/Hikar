@@ -1,8 +1,8 @@
 import { ModelProps } from '../../../types/hikar';
 
-export default function Glass({scale,  onClick = () => {} } : ModelProps) {
+export default function Glass({scale,  onClick = () => {}, onPointerDown = () => {}  } : ModelProps) {
     return(
-        <group scale={scale}>
+        <group scale={scale} onClick={onClick} onPointerDown={onPointerDown}>
             <mesh position={[0, 1.5, 0]} >
                 <cylinderGeometry args={[1, 1, 3]}/>
                 <meshStandardMaterial color="#cc6600" transparent opacity={0.5} />

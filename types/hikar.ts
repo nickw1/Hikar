@@ -91,7 +91,8 @@ export interface Destination {
 
 export interface ModelProps {
     scale: number,
-    onClick?: (e: ThreeEvent<THREE.Mesh | THREE.Group>) => void
+    onClick?: (e: ThreeEvent<THREE.Mesh | THREE.Group>) => void,
+    onPointerDown?: (e: ThreeEvent<THREE.Mesh | THREE.Group>) => void,
 }
 
 export interface Geodata {

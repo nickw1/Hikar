@@ -65,7 +65,7 @@ export default function RenderedSignpost({ signpost }: RenderedSignpostProps) {
     return (
 
 
-        <group scale={0.1} onClick={displayRouteInfo}>
+        <group scale={0.1} onPointerDown={displayRouteInfo}>
             <SignpostModel />
 
             {

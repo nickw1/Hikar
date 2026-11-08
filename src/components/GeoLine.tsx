@@ -59,6 +59,10 @@ export interface GeoLineProps {
      * Click event handler. When omitted, the line is not registered for pointer raycasting.
      */
     onClick?: (e: ThreeEvent<MouseEvent>) => void;
+     /**
+     * Pointer down event handler.
+     */
+    onPointerDown?: (e: ThreeEvent<PointerEvent>) => void;
     /**
      * Pointer out event handler. When omitted, the line is not registered for pointer raycasting.
      */
@@ -149,6 +153,7 @@ const GeoLine = ({
     gapSize = 1,
     lineWidth = 1,
     onClick,
+    onPointerDown,
     onPointerOut,
     onPointerOver,
     opacity = 1,
@@ -263,6 +268,7 @@ const GeoLine = ({
             onClick={onClick}
             onPointerOut={onPointerOut}
             onPointerOver={onPointerOver}
+            onPointerDown={onPointerDown}
         >
             {line && <primitive object={line} />}
         </group>,
