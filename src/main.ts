@@ -7,8 +7,6 @@ import TerrainGenerator from './terrain';
 import { Text } from 'troika-three-text';
 import { RoutableWay, RoutablePoi, Signpost } from '../types';
 import BoundingBox from './BoundingBox';
-import RoutingNetwork from './RoutingNetwork';
-import SignpostManager from './SignpostManager';
 import SignpostRenderer from './SignpostRenderer';
 
 const app = new App({ cameraOptions: { hFov: 80, near: 0.1, far: 4000 } });
@@ -51,12 +49,35 @@ const allWaysForRouting: FeatureCollection<LineString> = {
   "type": "FeatureCollection",
   "features": new Array<RoutableWay>()
 };
+
+const worker = new Worker(new URL("./worker.ts", import.meta.url), { type: "module" });
+
+worker.onmessage = e => {
+
+  switch (e.data.type) {
+    case 'dataUpdated':
+      onRoutingNetworkUpdated(); //  routingNetwork.update(e.data.data.ways, e.data.data.pois);
+      break;
+    case 'checkJunctionFinished':
+      /* if (sMgr !== null) {
+                const sign = sMgr.updatePos(e.data.data);
+                postMessage({ type: 'checkJunctionFinished', data: sign });
+            }*/
+      onSignpostUpdated(e.data.data);
+      break;
+  }
+};
+
+worker.postMessage({ type: "createObjects", "data": { routingNetworkOptions: { juncDistThreshold: 0.05 } } });
+
+/*
 const routingNetwork = new RoutingNetwork({
   juncDistThreshold: 0.05
 });
 const signpostManager = new SignpostManager({
   routingNetwork
 });
+*/
 
 const signpostRenderer = new SignpostRenderer(
   '/assets/nick_metal_sign_post.obj',
@@ -251,7 +272,8 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
                 f.weight = 0.0;
                 f.split = null;
                 newRoutablePois.features.push(f);
-                signpostManager.addRoutablePoi(f);
+                //signpostManager.addRoutablePoi(f);
+                worker.postMessage({ type: "addRoutablePoi", data: f });
               }
               break;
 
@@ -313,10 +335,13 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
     }
     if (newTiles.length > 0) {
       setMsg("Updating routing network...", "loadMsg");
-      routingNetwork.update(allWaysForRouting, newRoutablePois);
+      //routingNetwork.update(allWaysForRouting, newRoutablePois);
+      worker.postMessage({ type: "updateData", data: { ways: allWaysForRouting, pois: newRoutablePois } });
       setMsg("", "loadMsg");
     }
 
+    worker.postMessage({ type: "checkJunction", data: lonLat });
+    /*
     const newSignpost = signpostManager.updatePos(ev.position.coords);
     if (newSignpost !== null) {
 
@@ -328,8 +353,25 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
         locar?.add(signpostModel, newSignpost.position[0], newSignpost.position[1], newSignpost.position[2]);
       }
     }
+    */
   }
   showLocation(lonLat);
+}
+
+function onRoutingNetworkUpdated() {
+  setMsg("", "loadMsg");
+}
+
+async function onSignpostUpdated(newSignpost: Signpost) {
+  if (newSignpost !== null) {
+    printSignpost(newSignpost);
+    const signpostModel = await signpostRenderer.renderSignpost(newSignpost);
+
+    if (signpostModel) {
+      signpostModel.renderOrder = 1;
+      locar?.add(signpostModel, newSignpost.position[0], newSignpost.position[1], newSignpost.position[2]);
+    }
+  }
 }
 
 function printSignpost(signpost: Signpost) {
