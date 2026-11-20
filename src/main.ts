@@ -27,6 +27,16 @@ const widths: Map<string, number> = new Map([
   ["residential", 2]
 ]);
 
+const roadTypes = [
+  "trunk",
+  "primary",
+  "secondary",
+  "tertiary",
+  "unclassified",
+  "residential",
+  "service"
+];
+
 const noAccess = ["private", "no"];
 
 let locar: LocAR | null = null;
@@ -50,19 +60,26 @@ const allWaysForRouting: FeatureCollection<LineString> = {
   "features": new Array<RoutableWay>()
 };
 
+app.on("objectsIntersected", e => {
+  const nearestObject = e.intersections[0];
+  let object = nearestObject.object;
+  console.log('object:', object);
+  while (!object.userData.displayInfo && object.parent) {
+    object = object.parent;
+  }
+  if (object.userData.displayInfo) {
+    alert(object.userData.displayInfo.fullMsg || `${object.userData.displayInfo.name ? `This is ${object.userData.displayInfo.name}, which is a ` : "A "} ${object.userData.displayInfo.type || "POI of unknown type"}`);
+  }
+});
+
 const worker = new Worker(new URL("./worker.ts", import.meta.url), { type: "module" });
 
 worker.onmessage = e => {
-
   switch (e.data.type) {
     case 'dataUpdated':
-      onRoutingNetworkUpdated(); //  routingNetwork.update(e.data.data.ways, e.data.data.pois);
+      onRoutingNetworkUpdated();
       break;
     case 'checkJunctionFinished':
-      /* if (sMgr !== null) {
-                const sign = sMgr.updatePos(e.data.data);
-                postMessage({ type: 'checkJunctionFinished', data: sign });
-            }*/
       onSignpostUpdated(e.data.data);
       break;
   }
@@ -70,14 +87,6 @@ worker.onmessage = e => {
 
 worker.postMessage({ type: "createObjects", "data": { routingNetworkOptions: { juncDistThreshold: 0.05 } } });
 
-/*
-const routingNetwork = new RoutingNetwork({
-  juncDistThreshold: 0.05
-});
-const signpostManager = new SignpostManager({
-  routingNetwork
-});
-*/
 
 const signpostRenderer = new SignpostRenderer(
   '/assets/nick_metal_sign_post.obj',
@@ -227,19 +236,26 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
               feature.properties.hikar_id = `p${feature.properties.osm_id}`;
               const object = new THREE.Group();
               if (props.amenity == 'pub') {
-                object.add(Bar(4));
+                object.add(Bar(4, props.name));
               } else if (props.amenity == 'cafe') {
-                object.add(Cup(4));
+                object.add(Cup(4, props.name));
               } else if (props.natural == 'tree') {
                 object.add(Tree(4));
               } else if (props.shop !== undefined || props.building !== undefined) {
-                object.add(Building(4));
+                object.add(Building(4, props.name, props.shop || props.building));
               } else if (props.natural == "peak") {
                 const geom = new THREE.ConeGeometry(8, 24);
                 const material = new THREE.MeshStandardMaterial({ color: 0xff00ff });
+                const peak = new THREE.Mesh(geom, material);
+                peak.userData = {
+                  displayInfo: {
+                    name: props.name,
+                    type: 'peak'
+                  }
+                };
                 object.add(new THREE.Mesh(geom, material));
               } else {
-                object.add(Marker(4));
+                object.add(Marker(4, props.name));
               }
               const label = props.name || props.amenity || props.place || props.natural || props.shop;
               if (label) {
@@ -272,7 +288,6 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
                 f.weight = 0.0;
                 f.split = null;
                 newRoutablePois.features.push(f);
-                //signpostManager.addRoutablePoi(f);
                 worker.postMessage({ type: "addRoutablePoi", data: f });
               }
               break;
@@ -285,6 +300,11 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
                 if (lineCoords.length >= 2) {
                   const line = locar!.addGeoLine(lineCoords as [number, number, number?][], lineMaterial, width) // TODO on locar : change param to be possibly a GeoJSON Position type
                   line.renderOrder = 0;
+                  line.userData = {
+                    displayInfo: {
+                      type: props.designation || props.highway + (roadTypes.indexOf(props.highway) > -1 ? " road" : "")
+                    }
+                  };
                   indexedFeatures.set(feature.properties.hikar_id, feature);
 
 
@@ -314,7 +334,12 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
                   };
 
                   if (filteredCoords.length >= 2) {
-                    const line = locar!.addGeoLine(filteredCoords as [number, number, number?][], lineMaterial, width)
+                    const line = locar!.addGeoLine(filteredCoords as [number, number, number?][], lineMaterial, width);
+                    line.userData = {
+                      displayInfo: {
+                        type: props.designation || props.highway
+                      }
+                    };
                     line.renderOrder = 0;
                     indexedFeatures.set(splitWay.properties!.hikar_id, feature);
                     allWaysForRouting.features.push(splitWay);
@@ -335,25 +360,11 @@ async function onGpsUpdate(ev: GpsReceivedEvent) {
     }
     if (newTiles.length > 0) {
       setMsg("Updating routing network...", "loadMsg");
-      //routingNetwork.update(allWaysForRouting, newRoutablePois);
       worker.postMessage({ type: "updateData", data: { ways: allWaysForRouting, pois: newRoutablePois } });
       setMsg("", "loadMsg");
     }
 
     worker.postMessage({ type: "checkJunction", data: lonLat });
-    /*
-    const newSignpost = signpostManager.updatePos(ev.position.coords);
-    if (newSignpost !== null) {
-
-      printSignpost(newSignpost);
-      const signpostModel = await signpostRenderer.renderSignpost(newSignpost);
-
-      if (signpostModel) {
-        signpostModel.renderOrder = 1;
-        locar?.add(signpostModel, newSignpost.position[0], newSignpost.position[1], newSignpost.position[2]);
-      }
-    }
-    */
   }
   showLocation(lonLat);
 }

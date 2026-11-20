@@ -1,8 +1,16 @@
 import * as THREE from 'three';
 
-export default function Building(scale: number = 4) {
+export default function Building(scale: number = 4, name?: string, type?: string) {
     const group = new THREE.Group();
     group.scale.set(scale, scale, scale);
+    if(name) {
+        group.userData = {
+            displayInfo: {
+                name,
+                type
+            }
+        };
+    }
 
     const buildingGeom = new THREE.BoxGeometry(1.5, 1.5, 1.5);
     const buildingMaterial = new THREE.MeshStandardMaterial({ color: 0xff6060 });
