@@ -28,14 +28,14 @@ export default function WayRenderer() {
         byway_open_to_all_traffic: { colour: "red", width: 2 },
         restricted_byway:  { colour: "magenta", width: 2 },
         cycleway: { colour: "blue", width: 2 },
-        track: { colour: "#ff8000", width: 3.5 },
-        service: { colour: "lightgray", width: 3.5 },
-        residential: { colour: "lightgray", width: 5.5 },
-        unclassified: { colour: "lightgray", width: 6 },
-        tertiary : { colour: "lightgray", width: 6.5 },
-        secondary: { colour: "lightgray", width: 7.5 },
-        primary : { colour: "lightgray", width: 7.5 },
-        trunk : { colour: "lightgray", width: 7.5 }
+        track: { colour: "#ff8000", width: 2},
+        service: { colour: "lightgray", width: 2 },
+        residential: { colour: "lightgray", width: 3 },
+        unclassified: { colour: "lightgray", width: 4 },
+        tertiary : { colour: "lightgray", width: 6 },
+        secondary: { colour: "lightgray", width: 6 },
+        primary : { colour: "lightgray", width: 6 },
+        trunk : { colour: "lightgray", width: 7 }
     });
 
     const ways = useStore((state) => state.ways);
