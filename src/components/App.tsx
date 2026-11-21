@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { XR } from '@omnidotdev/rdk/engine';
 import { GeolocationSession } from '@omnidotdev/rdk/geolocation';
+import { KeyboardControls, type KeyboardControlsEntry } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import HikarMain from './HikarMain';
 import LoadingMsg from './LoadingMsg';
@@ -18,9 +19,21 @@ export default function App({ fakeLat, fakeLon }: AppParams) {
 
     const setLoadingMsg = useMsgStore((state) => state.setLoadingMsg);
 
+
     if (lonLat === null) {
         setLoadingMsg("Waiting for GPS...");
     }
+
+
+    const map = useMemo<KeyboardControlsEntry<string>[]>(() => [
+        { name: "forward", keys: ['ArrowUp', 'KeyW'] },
+        { name: 'back', keys: ['ArrowDown', 'KeyS'] },
+        { name: 'left', keys: ['ArrowLeft', 'KeyA'] },
+        { name: 'right', keys: ['ArrowRight', 'KeyD'] },
+        { name: 'up', keys: ['KeyQ'] },
+        { name: 'down', keys: ['KeyZ'] }
+    ], []);
+
 
     return (<>
         <Canvas gl={{ antialias: false, powerPreference: "default" }} style={{
@@ -48,7 +61,7 @@ export default function App({ fakeLat, fakeLon }: AppParams) {
                         }
                     }
                 }}>
-                    {lonLat === null ? "" : <HikarMain longitude={lonLat.longitude} latitude={lonLat.latitude} />}
+                    {lonLat === null ? "" : <KeyboardControls map={map}><HikarMain longitude={lonLat.longitude} latitude={lonLat.latitude} /></KeyboardControls>}
 
                 </GeolocationSession>
 

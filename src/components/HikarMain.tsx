@@ -1,6 +1,6 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { useGeolocationBackend } from '@omnidotdev/rdk/geolocation';
-import { useThree } from '@react-three/fiber';
+import { useThree, useFrame } from '@react-three/fiber';
 import GeoDataRenderer from './GeoDataRenderer';
 import TerrainGenerator from '../terrain';
 import { FeatureCollection, LineString, Point, MultiLineString, GeoJsonProperties } from 'geojson';
@@ -10,10 +10,12 @@ import { Way, Poi } from '../../types/hikar';
 import useTiler from '../hooks/useTiler';
 import useIndexedFeatures from '../hooks/useIndexedFeatures';
 import useRouting from '../hooks/useRouting';
+import useKeyboardCameraControls from '../hooks/useKeyboardCameraControls';
 import { LocAR, LonLat } from 'locar';
 import { RoutablePoi, RoutableWay, Signpost, HikarMainProps } from '../../types/hikar';
 import BoundingBox from '../BoundingBox';
 import * as THREE from 'three';
+
 
 
 type CameraFeedDimensions = {
@@ -66,10 +68,13 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
 
     console.log("Rendering HikarMain");
 
+    useKeyboardCameraControls(camera);
+
 
     return (
         <GeoDataRenderer />
     );
+
 
 
     async function onPosUpdated(pos: LonLat) {

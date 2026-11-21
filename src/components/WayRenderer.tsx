@@ -1,6 +1,6 @@
 
 import { memo, useRef, useEffect } from 'react';
-import GeoLine from './GeoLine'; //@omnidotdev/rdk/geolocation';
+import { GeoLine } from '@omnidotdev/rdk/geolocation';
 import type { Way } from '../../types/hikar';
 import { useStore } from '../hooks/useStore';
 
