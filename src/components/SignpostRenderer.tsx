@@ -8,7 +8,7 @@ export default function SignpostRenderer() {
     const signposts = useStore((state) => state.signposts);
     return (
         signposts.map(signpost => (
-            <GeolocationAnchor key={`sp-${signpost.jKey}`} longitude={signpost.position[0]} latitude={signpost.position[1]} altitude={signpost.position[2]}>
+            <GeolocationAnchor key={`sp-${signpost.jKey}`} longitude={signpost.position[0]} latitude={signpost.position[1]} altitude={signpost.position[2]} isBillboard={false}>
                 <RenderedSignpost signpost={signpost} />
             </GeolocationAnchor>
         ))
