@@ -5,7 +5,6 @@ import { ThreeEvent } from '@react-three/fiber';
 import type { Poi } from '../../types/hikar';
 import Glass from './basicModels/Glass';
 import Cup from './basicModels/Cup';
-import Tree from './basicModels/Tree';
 import Building from './basicModels/Building';
 import Marker from './basicModels/Marker';
 import { GeolocationAnchor } from '@omnidotdev/rdk/geolocation';
@@ -15,9 +14,7 @@ export default function RenderedPoi({ poi }: { poi: Poi }) {
 
     const clickHandler = useCallback((e: ThreeEvent<THREE.Mesh | THREE.Group>) => {
         e.stopPropagation();
-        if (poi.properties?.name) {
-            alert(`This is ${poi.properties.name}`);
-        }
+        alert(`${poi.properties?.name ? `This is ${poi.properties.name}, which is a ` : "A "} ${poi.properties?.type || "POI of unknown type"}`);
     }, [poi]);
 
     let element = <></>;
@@ -27,26 +24,23 @@ export default function RenderedPoi({ poi }: { poi: Poi }) {
             element = <Glass scale={4} onPointerDown={clickHandler} />;
             break;
         case "cafe":
-            element = <Cup scale={4} onPointerDown={clickHandler}/>;
-            break;
-        case "tree":
-            element = <Tree scale={4} onPointerDown={clickHandler}/>;
+            element = <Cup scale={4} onPointerDown={clickHandler} />;
             break;
         case "peak":
             element = <mesh scale={4} onPointerDown={clickHandler}><coneGeometry args={[8, 24]} /><meshStandardMaterial color={0xff00ff} /></mesh>;
             break;
         case "shop":
         case "building":
-            element = <Building scale={4} id={`bldg-${poi.properties!.hikar_id}`} onPointerDown={clickHandler}/>;
+            element = <Building scale={4} id={`bldg-${poi.properties!.hikar_id}`} onPointerDown={clickHandler} />;
             break;
         default:
-            element = <Marker scale={4} onPointerDown={clickHandler}/>;
+            element = <Marker scale={4} onPointerDown={clickHandler} />;
     }
 
     return (
         <GeolocationAnchor key={`${poi.properties!.hikar_id}`} latitude={poi.geometry.coordinates[1]} longitude={poi.geometry.coordinates[0]} altitude={poi.geometry.coordinates[2]}>
             {element}
-            {poi.properties!.name ? <Text position={[0, -2, 0]} scale={5} font="https://fonts.gstatic.com/s/roboto/v18/KFOmCnqEu92Fr1Mu4mxM.woff" color="white" anchorX="center" anchorY="middle">{poi.properties!.name}</Text> : ""}
+            {poi.properties!.name ? <Text position={[0, 20, 0]} scale={5} font="https://fonts.gstatic.com/s/roboto/v18/KFOmCnqEu92Fr1Mu4mxM.woff" color="white" anchorX="center" anchorY="middle">{poi.properties!.name}</Text> : ""}
         </GeolocationAnchor>
     );
 

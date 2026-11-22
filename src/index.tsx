@@ -4,8 +4,7 @@ import ReactDOM from 'react-dom/client';
 import App from './components/App';
 
 // Fake location used for initial testing
-//const START_POS = { lat: "51.051384", lon: "-0.728487" };
-const START_POS = { lat: "50.933911", lon: "-1.411676" };
+const START_POS = { lat: "51.051384", lon: "-0.728487" };
 const params = new URLSearchParams(window.location.search);
 
 const root = ReactDOM.createRoot(

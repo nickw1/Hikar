@@ -84,10 +84,8 @@ export default class RoutingNetwork {
     // is a given point a junction?
     // will trigger routing for some applications, e.g. Hikar
     findJunction(p: Position): FoundVertex | null {
-        //console.log(`findJunction at ${p}`);
         if (this.vDet) {
             const junc = this.vDet.findNearestVertex(p, true);
-            //console.log(`Junc at ${junc.distance} `);
             return junc.distance < this.juncDistThreshold ? junc : null;
         }
         return null;

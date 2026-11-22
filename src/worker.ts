@@ -19,7 +19,7 @@ onmessage = e => {
             break;
 
         case 'checkJunction':
-            console.log('worker checkJunction: data=', e.data.data);
+ 
             if (sMgr !== null) {
                 const sign = sMgr.updatePos(e.data.data);
               
@@ -32,7 +32,6 @@ onmessage = e => {
             routingNetwork = new RoutingNetwork(e.data.data.routingNetworkOptions);
             sMgr = new SignpostManager({
                 routingNetwork,
-                juncDetectDistChange: 0.002
             });
             break;
 

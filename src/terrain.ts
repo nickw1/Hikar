@@ -26,7 +26,7 @@ export default class TerrainGenerator {
             for (let col = 0; col < ptWidth; col++) {
                 i = row * ptWidth + col;
                 array[i * 3] = bottomLeftWorld[0] + col * colSpacing;
-                array[i * 3 + 1] = this.dem.elevs[i] - 1;
+                array[i * 3 + 1] = this.dem.elevs[i] - 2; // still getting some artefacts: reduce further
                 array[i * 3 + 2] = bottomLeftWorld[1] - (ptHeight - 1 - row) * rowSpacing;
             }
         }

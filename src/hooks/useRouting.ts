@@ -17,8 +17,6 @@ export default function useRouting(options: {
 
         if (!worker) {
             worker = new Worker(new URL("../worker.ts", import.meta.url), { type: 'module' });
-            //  routingNetwork.current = new RoutingNetwork(options);
-            //  signpostManager.current = new SignpostManager({ routingNetwork: routingNetwork.current })
 
             worker.onmessage = e => {
 
@@ -39,8 +37,6 @@ export default function useRouting(options: {
 
     return {
         updateRoutingNetwork: (allWaysForRouting: FeatureCollection<LineString>, newRoutablePois: FeatureCollection<Point>) => {
-
-            // routingNetwork.current?.update(allWaysForRouting, newRoutablePois);
             worker?.postMessage({ type: "updateData", data: { ways: allWaysForRouting, pois: newRoutablePois } });
         },
         addRoutablePoi: (f: RoutablePoi) => {
@@ -48,7 +44,6 @@ export default function useRouting(options: {
             worker?.postMessage({ type: "addRoutablePoi", data: f });
         },
         findSignpostAtLonLat: (lonLat: LonLat) => {
-            console.log('calling findSignpostAtLonLat() at ', lonLat);
             worker?.postMessage({ type: "checkJunction", data: lonLat });
         }
     }

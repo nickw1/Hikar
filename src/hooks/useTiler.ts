@@ -17,8 +17,6 @@ export default function useTiler(demUrl: string, jsonUrl: string) {
 
     return {
         updateTiler: async (lonLat: LonLat) => {
-
-            console.log(`updateTiler: ${JSON.stringify(lonLat)}`)
             if(demApplier.current !== null) {
                 return await demApplier.current.updateByLonLat(lonLat);
             } else {
@@ -27,7 +25,6 @@ export default function useTiler(demUrl: string, jsonUrl: string) {
 
         },
         getElevation: (lonLat: LonLat) => {
-            console.log(`getElevation(): lonLat=${JSON.stringify(lonLat)}, tiler = ${demTiler.current}}`)
             return demTiler.current?.getElevationFromLonLat(lonLat) ?? Number.NEGATIVE_INFINITY
         },
 

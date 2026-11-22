@@ -34,8 +34,8 @@ class SignpostManager extends EventEmitter {
     }
 
     updatePos(p: LonLat): Signpost | null {
-      
-        // Only try to detect a junction if we've moved a certain distance
+    
+        // Only try to detect a junction if we've moved a certain distance'
         if (!this.routingNetwork.hasData() || LocAR.haversineDist(p, this.lastPos) < this.juncDetectDistChange) {
             return null;
         }
@@ -45,7 +45,7 @@ class SignpostManager extends EventEmitter {
            
             const jKey = `${j.coords[0].toFixed(5)},${j.coords[1].toFixed(5)}`;
           
-            if (this.signposts[jKey]) {
+            if (this.signposts[jKey]) {https://github.com/nickw1/Hikar/blob/main/src/SignpostManager.ts
                 return null; // existing signpost present 
             } else {
                 if (this.eventHandlers["startProcessing"]) {

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { XR } from '@omnidotdev/rdk/engine';
 import { GeolocationSession } from '@omnidotdev/rdk/geolocation';
 import { KeyboardControls, type KeyboardControlsEntry } from '@react-three/drei';
@@ -6,14 +6,12 @@ import { Canvas } from '@react-three/fiber';
 import HikarMain from './HikarMain';
 import LoadingMsg from './LoadingMsg';
 import StatusMsg from './StatusMsg';
-import type { LonLat } from 'locar';
+import { LocAR, type LonLat } from 'locar';
 import type { AppParams } from '../../types/hikar';
 import { useMsgStore } from '../hooks/useMsgStore';
 
 
 export default function App({ fakeLat, fakeLon }: AppParams) {
-
-
 
     const [lonLat, setLonLat] = useState<LonLat | null>(null);
 
@@ -24,6 +22,10 @@ export default function App({ fakeLat, fakeLon }: AppParams) {
         setLoadingMsg("Waiting for GPS...");
     }
 
+    const lastPos = useRef<LonLat>({
+        latitude: 0,
+        longitude: 0
+    });
 
     const map = useMemo<KeyboardControlsEntry<string>[]>(() => [
         { name: "forward", keys: ['ArrowUp', 'KeyW'] },
@@ -51,13 +53,13 @@ export default function App({ fakeLat, fakeLon }: AppParams) {
                 <GeolocationSession options={{
                     fakeLat: fakeLat === undefined || fakeLat === null ? undefined : parseFloat(fakeLat),
                     fakeLon: fakeLon === undefined || fakeLon === null ? undefined : parseFloat(fakeLon),
-                    //   fakeLat: START_POS.lat,
-                    // fakeLon: START_POS.lon,
                     onGpsUpdate: (pos, distMoved) => {
-                        //console.log(`got a gps pos: ${pos.coords.longitude} ${pos.coords.latitude}, distMoved = ${distMoved}`);
-                        if (distMoved > 5) {
-                            // console.log("setting lon/lat, should trigger render...");
+                        if(LocAR.haversineDist(pos.coords, lastPos.current) > 10) {
                             setLonLat(pos.coords);
+                            lastPos.current = {
+                                latitude: pos.coords.latitude,
+                                longitude: pos.coords.longitude
+                            }
                         }
                     }
                 }}>
