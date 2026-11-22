@@ -20,7 +20,6 @@ export default function RenderedPoi({ poi }: { poi: Poi }) {
         }
     }, [poi]);
 
-
     let element = <></>;
     switch (poi.properties!.type) {
         case "pub":

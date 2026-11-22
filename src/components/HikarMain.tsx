@@ -11,7 +11,7 @@ import useTiler from '../hooks/useTiler';
 import useIndexedFeatures from '../hooks/useIndexedFeatures';
 import useRouting from '../hooks/useRouting';
 import useKeyboardCameraControls from '../hooks/useKeyboardCameraControls';
-import { LocAR, LonLat } from 'locar';
+import { LocAR, LonLat, SphMercProjection } from 'locar';
 import { RoutablePoi, RoutableWay, Signpost, HikarMainProps } from '../../types/hikar';
 import BoundingBox from '../BoundingBox';
 import * as THREE from 'three';
@@ -44,6 +44,7 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
             setLoadingMsg("");
             if (signpost !== null) {
                 console.log("triggering render of signpost");
+                alert("found sp");
                 addSignpost(signpost);
                 printSignpost(signpost);
             }
@@ -59,6 +60,7 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
     const noAccess = ["private", "no"];
 
     const { locar } = useGeolocationBackend();
+    
     const { camera, size } = useThree();
 
     useEffect(() => {
@@ -68,7 +70,12 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
 
     console.log("Rendering HikarMain");
 
-    useKeyboardCameraControls(camera);
+    const proj = new SphMercProjection();
+
+    useKeyboardCameraControls(camera, 0.5, (pos: THREE.Vector3) => {
+        const unprojected = proj.unproject([pos.x, -pos.z]);
+        onPosUpdated({ longitude: longitude + unprojected[0], latitude: latitude + unprojected[1]});
+    });
 
 
     return (
@@ -78,7 +85,6 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
 
 
     async function onPosUpdated(pos: LonLat) {
-        console.log(`onPosUpdated(): ${pos.longitude} ${pos.latitude}`);
 
         if (LocAR.haversineDist(lastPos.current, pos) > 10) {
             lastPos.current.latitude = pos.latitude;

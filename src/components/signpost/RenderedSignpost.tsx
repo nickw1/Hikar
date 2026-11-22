@@ -65,7 +65,7 @@ export default function RenderedSignpost({ signpost }: RenderedSignpostProps) {
     return (
 
 
-        <group scale={0.1} onPointerDown={displayRouteInfo}>
+        <group scale={0.1}>
             <SignpostModel />
 
             {
@@ -76,7 +76,7 @@ export default function RenderedSignpost({ signpost }: RenderedSignpostProps) {
                     console.log(`bearing ${bearing}`)
                     return (
                         <SignpostArmModel key={`${signpost.jKey}-arm-${bearing}`} rotation={[0, (-bearing - 180) * Math.PI / 180, 0]}
-                            onClick={(e: ThreeEvent<THREE.Group>) => {
+                            onPointerDown={(e: ThreeEvent<THREE.Group>) => {
                                 e.stopPropagation();
                                 displayRouteInfo(routeInfo)
                             }}>

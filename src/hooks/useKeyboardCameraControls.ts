@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { useKeyboardControls } from '@react-three/drei';
 
 
-export default function useKeyboardCameraControls(camera: Camera) {
+export default function useKeyboardCameraControls(camera: Camera, velocity: number = 0.1, onCameraPosUpdated: (pos: Vector3) => void) {
     const [, get] = useKeyboardControls();
 
     useFrame(() => {
@@ -14,27 +14,28 @@ export default function useKeyboardCameraControls(camera: Camera) {
                 const vec = new Vector3(0, 0, 0);
 
                 camera.getWorldDirection(vec);
-                vec.multiplyScalar(0.1);
+                vec.multiplyScalar(velocity);
 
                 camera.position.set(
                     camera.position.x + vec.x,
                     camera.position.y + vec.y,
                     camera.position.z + vec.z
                 );
+                onCameraPosUpdated(camera.position);
 
             }
             if (key.back) {
                 const vec = new Vector3(0, 0, 0);
 
                 camera.getWorldDirection(vec);
-                vec.multiplyScalar(0.1);
+                vec.multiplyScalar(velocity);
 
                 camera.position.set(
                     camera.position.x - vec.x,
                     camera.position.y - vec.y,
                     camera.position.z - vec.z
                 );
-
+                 onCameraPosUpdated(camera.position);
             }
             if (key.left) {
 
@@ -47,12 +48,13 @@ export default function useKeyboardCameraControls(camera: Camera) {
 
             }
             if (key.up) {
-                camera.translateY(0.1);
+                camera.translateY(velocity);
+                onCameraPosUpdated(camera.position);
 
             }
             if (key.down) {
-                camera.translateY(-0.1);
-
+                camera.translateY(-velocity);
+                onCameraPosUpdated(camera.position);
             }
         }
     })

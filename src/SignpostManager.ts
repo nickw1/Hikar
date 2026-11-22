@@ -34,7 +34,7 @@ class SignpostManager extends EventEmitter {
     }
 
     updatePos(p: LonLat): Signpost | null {
-
+      
         // Only try to detect a junction if we've moved a certain distance
         if (!this.routingNetwork.hasData() || LocAR.haversineDist(p, this.lastPos) < this.juncDetectDistChange) {
             return null;
@@ -42,8 +42,9 @@ class SignpostManager extends EventEmitter {
         this.lastPos = p;
         const j = this.routingNetwork.findJunction([p.longitude, p.latitude]);
         if (j !== null) {
-            //console.log(`junction found: ${j}`)
+           
             const jKey = `${j.coords[0].toFixed(5)},${j.coords[1].toFixed(5)}`;
+          
             if (this.signposts[jKey]) {
                 return null; // existing signpost present 
             } else {
@@ -61,6 +62,7 @@ class SignpostManager extends EventEmitter {
                     })
                 };
 
+             
                 const groupedPois = this.routingNetwork.route(
                     j.coords,
                     nearestPois, {
@@ -93,6 +95,7 @@ class SignpostManager extends EventEmitter {
 
 
                 this.signposts[jKey] = signpost;
+               
                 return Object.keys(signpost.arms).length > 0 ? signpost : null;
             }
         }

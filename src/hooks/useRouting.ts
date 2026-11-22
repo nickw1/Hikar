@@ -48,7 +48,7 @@ export default function useRouting(options: {
             worker?.postMessage({ type: "addRoutablePoi", data: f });
         },
         findSignpostAtLonLat: (lonLat: LonLat) => {
-
+            console.log('calling findSignpostAtLonLat() at ', lonLat);
             worker?.postMessage({ type: "checkJunction", data: lonLat });
         }
     }
