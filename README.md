@@ -8,6 +8,10 @@ The intention is for elevation data to be stored locally on Hikar's own server t
 
 Hikar is currently live at [https://hikar.org](hikar.org). Currently the live Hikar server **only provides data in Europe and Turkey** due to server constraints, however the software is capable of working globally. So if you wanted to set up a Hikar server for your own area of the world, you could do using the above data sources.
 
+## IMPORTANT - pure LocAR version
+
+This branch is a pure LocAR version, it was originally on the `main` branch. The `main` branch now features the [RDK](https://github.com/omnidotdev/rdk) version, as this is now feature-comparable with the pure-LocAR version.
+
 ## Background
 
 Hikar was originally implemented as a [native Android app](https://gitlab.com/nickw1/Hikar) and then as a web app using "classic" location-based AR.js and A-Frame (see [old repo](https://github.com/nickw1/hikar.js)).
@@ -29,7 +33,6 @@ The virtual signpost functionality currently requires a modified version of `geo
 ## Future plans
 
 - More extensive UI, e.g. search for and route to nearby POIs
-- Show POI details by tapping rendered POIs
 - Different signpost rendering styles (e.g. showing destinations by tapping on a path rather than via a virtual signpost)
 - React Native support. This now looks feasible thanks to [React Native WebGPU](https://github.com/wcandillon/react-native-webgpu); a proof-of-concept combining the camera feed, rendered data and sensors (not a full AR app!) [has been produced here](https://github.com/nickw1/react-native-AR-poc/)
 - Create a Docker image making it easier to create local Hikar installations covering specific parts of the globe.
