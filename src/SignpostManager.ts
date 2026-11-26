@@ -5,7 +5,7 @@ import type { LonLat } from 'locar-tiler';
 import type { Point, FeatureCollection } from 'geojson';
 import { point as turfPoint } from '@turf/helpers';
 import turfBearing from '@turf/bearing';
-import type { SignpostManagerOptions, Signpost, SignpostArm, Destination, RoutablePoi } from '../types';
+import type { SignpostManagerOptions, Signpost, SignpostArm, Destination, RoutablePoi } from '../types/hikar';
 import RoutingNetwork from './RoutingNetwork';
 
 
@@ -34,17 +34,18 @@ class SignpostManager extends EventEmitter {
     }
 
     updatePos(p: LonLat): Signpost | null {
-
-        // Only try to detect a junction if we've moved a certain distance
+    
+        // Only try to detect a junction if we've moved a certain distance'
         if (!this.routingNetwork.hasData() || LocAR.haversineDist(p, this.lastPos) < this.juncDetectDistChange) {
             return null;
         }
         this.lastPos = p;
         const j = this.routingNetwork.findJunction([p.longitude, p.latitude]);
         if (j !== null) {
-            console.log(`junction found: ${j}`)
+           
             const jKey = `${j.coords[0].toFixed(5)},${j.coords[1].toFixed(5)}`;
-            if (this.signposts[jKey]) {
+          
+            if (this.signposts[jKey]) {https://github.com/nickw1/Hikar/blob/main/src/SignpostManager.ts
                 return null; // existing signpost present 
             } else {
                 if (this.eventHandlers["startProcessing"]) {
@@ -61,6 +62,7 @@ class SignpostManager extends EventEmitter {
                     })
                 };
 
+             
                 const groupedPois = this.routingNetwork.route(
                     j.coords,
                     nearestPois, {
@@ -70,7 +72,7 @@ class SignpostManager extends EventEmitter {
 
                 const curPoint = turfPoint(j.coords);
 
-                let signpost = { position: j.coords, arms: {} as { [bearing: number]: SignpostArm } };
+                let signpost = { jKey, position: j.coords, arms: {} as { [bearing: number]: SignpostArm } };
                 Object.keys(j.edges)
                     .filter(k => j.edges[k].properties?.isAccessiblePath == true)
                     .forEach(k => {
@@ -93,6 +95,7 @@ class SignpostManager extends EventEmitter {
 
 
                 this.signposts[jKey] = signpost;
+               
                 return Object.keys(signpost.arms).length > 0 ? signpost : null;
             }
         }

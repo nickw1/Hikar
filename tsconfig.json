@@ -7,8 +7,8 @@
         "esModuleInterop": true,
         "module": "preserve",
         "moduleResolution": "bundler",
-      
+        "jsx": "preserve"
     }, 
-    "files" : [ "server.ts", "src/main.ts"],
+    "files" : [ "server.ts", "src/index.tsx"],
     "include": [ "types/*.d.ts" ],   
 }
