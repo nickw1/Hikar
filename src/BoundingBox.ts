@@ -14,9 +14,10 @@ export default class BoundingBox {
     }
 
 
-    static contains(bbox: BoundingBox, p: Position) {
+    static contains(bbox:BoundingBox, p: Position) {
         return p[0] > bbox.bottomLeft.longitude && p[0] < bbox.topRight.longitude && p[1] > bbox.bottomLeft.latitude && p[1] < bbox.topRight.latitude;
     }
+
 
     toString() {
         return `${this.bottomLeft.longitude},${this.bottomLeft.latitude},${this.topRight.longitude},${this.topRight.latitude}`;

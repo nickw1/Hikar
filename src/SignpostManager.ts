@@ -5,7 +5,7 @@ import type { LonLat } from 'locar-tiler';
 import type { Point, FeatureCollection } from 'geojson';
 import { point as turfPoint } from '@turf/helpers';
 import turfBearing from '@turf/bearing';
-import type { SignpostManagerOptions, Signpost, SignpostArm, Destination, RoutablePoi } from '../types/hikar';
+import type { SignpostManagerOptions, Signpost, SignpostArm, Destination, RoutablePoi, SignpostWithErrorInfo } from '../types/hikar';
 import RoutingNetwork from './RoutingNetwork';
 
 
@@ -33,20 +33,23 @@ class SignpostManager extends EventEmitter {
         this.poisForSignposts.features.push(poi);
     }
 
-    updatePos(p: LonLat): Signpost | null {
-    
-        // Only try to detect a junction if we've moved a certain distance'
-        if (!this.routingNetwork.hasData() || LocAR.haversineDist(p, this.lastPos) < this.juncDetectDistChange) {
-            return null;
+    updatePos(p: LonLat): SignpostWithErrorInfo {
+
+        // Only try to detect a junction if we've moved a certain distance
+        if (!this.routingNetwork.hasData()) {
+            return { signpost: null, reasonForNull: "Routing network has no data" };
+        } else if (LocAR.haversineDist(p, this.lastPos) < this.juncDetectDistChange) {
+            return { signpost: null, reasonForNull: `Distance too low, ${LocAR.haversineDist(p, this.lastPos)} is less than ${this.juncDetectDistChange}` };
         }
         this.lastPos = p;
-        const j = this.routingNetwork.findJunction([p.longitude, p.latitude]);
+        const { j, status } = this.routingNetwork.findJunction([p.longitude, p.latitude]);
         if (j !== null) {
-           
+
             const jKey = `${j.coords[0].toFixed(5)},${j.coords[1].toFixed(5)}`;
-          
-            if (this.signposts[jKey]) {https://github.com/nickw1/Hikar/blob/main/src/SignpostManager.ts
-                return null; // existing signpost present 
+
+            if (this.signposts[jKey]) {
+                https://github.com/nickw1/Hikar/blob/main/src/SignpostManager.ts
+                return { signpost: null, reasonForNull: `Same signpost : jKey ${jKey}` }; // existing signpost present 
             } else {
                 if (this.eventHandlers["startProcessing"]) {
                     this.emit("startProcessing");
@@ -56,13 +59,13 @@ class SignpostManager extends EventEmitter {
                     type: "FeatureCollection",
                     features: this.poisForSignposts.features.filter(poi => {
                         const pt = poi.geometry;
-                       
+
                         const dist = LocAR.haversineDist({ longitude: pt.coordinates[0], latitude: pt.coordinates[1] }, p);
                         return dist <= 3000 || (dist <= 5000 && poi.properties?.amenity === undefined && poi.properties?.place !== 'locality');
                     })
                 };
 
-             
+
                 const groupedPois = this.routingNetwork.route(
                     j.coords,
                     nearestPois, {
@@ -79,6 +82,7 @@ class SignpostManager extends EventEmitter {
                         let bearing = Math.round(turfBearing(curPoint, turfPoint(
                             j.edges[k].coords[1]
                         )));
+
                         if (bearing < 0) bearing += 360;
                         signpost.arms[bearing] = {
                             properties: j.edges[k].properties,
@@ -95,11 +99,11 @@ class SignpostManager extends EventEmitter {
 
 
                 this.signposts[jKey] = signpost;
-               
-                return Object.keys(signpost.arms).length > 0 ? signpost : null;
+
+                return Object.keys(signpost.arms).length > 0 ? { signpost } : { signpost: null, reasonForNull: "No arms" };
             }
         }
-        return null; // not a junction
+        return { signpost: null, reasonForNull: `Not a junction: junction status ${status.join("\n")}` }; // not a junction
     }
 
     static _getWeighting(destination: Destination) {

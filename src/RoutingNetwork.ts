@@ -19,7 +19,6 @@ import { RoutablePoi, RoutableWay, RoutingNetworkOptions, RouteOptions, FoundVer
 import type { Point, FeatureCollection, GeoJsonProperties, LineString, Position, Feature } from 'geojson';
 
 
-
 export default class RoutingNetwork {
 
     pathFinder: PathFinder<ReducedEdgeData, GeoJsonProperties> | null;
@@ -55,8 +54,11 @@ export default class RoutingNetwork {
 
     // Update with new geojson before attempting to route
     // POIs in the geojson will be inserted into the network, so that they can be routed to.
-    update(ways: FeatureCollection<LineString>, poisToInsert: FeatureCollection<Point>) {
+    update(ways: FeatureCollection<LineString>, poisToInsert: FeatureCollection<Point>): string[] {
+
+        const status = [];
         this.ways.features = [...this.ways.features, ...ways.features];
+        status.push(`RoutingNetwork.update(): new features ${ways.features.length}, total features ${this.ways.features.length}`);
         if (this.ways.features.length > 0) {
             this.insertIntoNetwork(poisToInsert);
             this.pathFinder = new PathFinder(this.ways, {
@@ -76,20 +78,28 @@ export default class RoutingNetwork {
                     };
                 }
             });
-            this.vDet = new VertexDetector(this.pathFinder);
+            if (this.vDet === null) {
+                status.push("RoutingNetwork.update(): ***** Creating vDet *****");
+                this.vDet = new VertexDetector(this.pathFinder);
+            }
         } else {
-            this.vDet = null;
+            status.push(`RoutingNetwork.update(): No ways received. vDet still null? ${this.vDet === null}`);
+            //   this.vDet = null; // ?? Do we want to reset vDet to null, why not just ignore the empty ways?
         }
+        return status;
     }
 
     // is a given point a junction?
     // will trigger routing for some applications, e.g. Hikar
-    findJunction(p: Position): FoundVertex | null {
+    findJunction(p: Position): { j: FoundVertex | null, status: string[] } {
+        const status: string[] = [];
         if (this.vDet) {
             const junc = this.vDet.findNearestVertex(p, true);
-            return junc.distance < this.juncDistThreshold ? junc : null;
+            status.push(`findJunction(): junc distance=${junc.distance}, juncDistThreshold=${this.juncDistThreshold}`);
+            return { j: junc.distance < this.juncDistThreshold ? junc : null, status }
         }
-        return null;
+        status.push("findJunction(): no vertex detector");
+        return { status, j: null };
     }
 
     // Input:
@@ -237,6 +247,7 @@ export default class RoutingNetwork {
 
         pois.features.forEach(p => {
             const poi = p as RoutablePoi;
+            //console.log(`insertIntoNetwork(): poi name = ${p.properties!.name}`);
             (this.ways.features as RoutableWay[]).filter(way => BoundingBox.contains(way.boundingBox!, poi.geometry.coordinates)).forEach(way => {
 
                 let lowestDist: HaversineDistToLineResult = { distance: Number.MAX_VALUE, proportion: 0, intersection: null }, idx = -1, curDist;

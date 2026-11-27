@@ -6,15 +6,18 @@ import TerrainGenerator from '../terrain';
 import { FeatureCollection, LineString, Point, MultiLineString, GeoJsonProperties } from 'geojson';
 import { useStore } from '../hooks/useStore';
 import { useMsgStore } from '../hooks/useMsgStore';
-import { Way, Poi } from '../../types/hikar';
+import { Way, Poi, SignpostWithErrorInfo } from '../../types/hikar';
 import useTiler from '../hooks/useTiler';
 import useIndexedFeatures from '../hooks/useIndexedFeatures';
 import useRouting from '../hooks/useRouting';
 import useKeyboardCameraControls from '../hooks/useKeyboardCameraControls';
 import { LonLat, SphMercProjection } from 'locar';
 import { RoutablePoi, RoutableWay, Signpost, HikarMainProps } from '../../types/hikar';
+import VertexDetector from '../VertexDetector';
 import BoundingBox from '../BoundingBox';
 import * as THREE from 'three';
+
+
 
 
 
@@ -25,7 +28,7 @@ type CameraFeedDimensions = {
 
 export default function HikarMain({ longitude, latitude }: HikarMainProps) {
 
-
+    console.log(`Re-rendering HikarMain at ${longitude} ${latitude}`);
     const addGeoData = useStore((state) => state.addGeoData);
     const addSignpost = useStore((state) => state.addSignpost);
     const setLoadingMsg = useMsgStore((state) => state.setLoadingMsg);
@@ -36,15 +39,24 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
         routingNetworkOptions: {
             juncDistThreshold: 0.02
         },
-        onDataUpdated: () => {
+        onDataUpdated: (data: string[]) => {
+            isLoadingData.current = false;
+            console.log('onDataUpdated(): status: ', data);
+            console.log('onDataUpdated(): Data was updated. Setting isLoadingData to false to allow new loads');
             setLoadingMsg("Checking for signposts...");
-            findSignpostAtLonLat(lastPos.current);
+            findSignpostAtLonLat({ longitude, latitude });
         },
-        onSignpostFound: (signpost: Signpost | null) => {
+        onSignpostFound: (signpost: SignpostWithErrorInfo) => {
+            console.log('onSignpostFound()');
+            lastPos.current.latitude = latitude;
+            lastPos.current.longitude = longitude;
             setLoadingMsg("");
-            if (signpost !== null) {
-                addSignpost(signpost);
-                printSignpost(signpost);
+            if (signpost.signpost !== null) {
+                console.log('Found a signpost');
+                addSignpost(signpost.signpost);
+                printSignpost(signpost.signpost);
+            } else if (signpost.reasonForNull) {
+                console.log(`Reason for no signpost: ${signpost.reasonForNull}`);
             }
         }
     });
@@ -59,9 +71,9 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
 
     const { locar } = useGeolocationBackend();
 
-    const { camera, size } = useThree(); setLoadingMsg("Checking for signposts...");
-
+    const { camera, size } = useThree();
     useEffect(() => {
+        console.log(`Running effect to call onPosUpdated, at ${longitude} ${latitude}`);
         onPosUpdated({ longitude, latitude });
     }, [longitude, latitude]);
 
@@ -72,6 +84,7 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
         onPosUpdated({ longitude: longitude + unprojected[0], latitude: latitude + unprojected[1] });
     });
 
+    const isLoadingData = useRef<boolean>(false);
 
     return (
         <GeoDataRenderer />
@@ -80,135 +93,146 @@ export default function HikarMain({ longitude, latitude }: HikarMainProps) {
 
 
     async function onPosUpdated(pos: LonLat) {
+        if (!isLoadingData.current) {
+            console.log("Not currently loading data - triggering a load for pos ", pos);
+            setLoadingMsg("Downloading data...");
+            isLoadingData.current = true;
+            const newData = await updateTiler(pos);
+            const elev = getElevation(pos) ?? 0;
+            setStatusMsg(`Lat: ${pos.latitude.toFixed(3)} Lon: ${pos.longitude.toFixed(3)} Elev: ${Math.round(elev)}m`);
+            camera.position.setY(elev + 2);
+            if (newData.length > 0) {
+                console.log(`We got new data from the tiler: ${newData.length} tiles`);
+                setLoadingMsg("Rendering data...");
+                const pois = new Array<Poi>(),
+                    ways = new Array<Way>(),
+                    terrains = new Array<THREE.Mesh>();
+
+                const poisForRouting: FeatureCollection<Point> = {
+                    "type": "FeatureCollection",
+                    "features": new Array<Poi>()
+                }, waysForRouting: FeatureCollection<LineString> = {
+                    "type": "FeatureCollection",
+                    "features": new Array<Way>()
+                };
+
+                for (let dataTile of newData) {
+                    const tileKey = dataTile.tile.getIndex();
+                    const newDem = getDataForTile(tileKey);
+                    if (newDem) {
+                        const terrainGenerator = new TerrainGenerator(newDem);
+                        const terrain = terrainGenerator.genTerrain(locar!);
+                        terrain.userData["tileKey"] = tileKey;
+                        terrain.renderOrder = -1;
+                        (terrain.material as THREE.MeshStandardMaterial).colorWrite = false;
+                        terrains.push(terrain);
+                    }
+                    console.log(`Processing ${(dataTile.data as FeatureCollection).features.length} features from tile ${tileKey}`);
+                    for (let feature of (dataTile.data as FeatureCollection).features) {
+                        feature.properties ??= {};
+                        const props = feature.properties;
+                        const hikar_id = props.hikar_id ?? 0;
+                        if (!indexedFeatures[hikar_id]) {
+
+                            const hwy = feature.properties?.highway;
 
 
-        lastPos.current.latitude = pos.latitude;
-        lastPos.current.longitude = pos.longitude;
-        setLoadingMsg("Downloading data...");
-        const newData = await updateTiler(pos);
-        const elev = getElevation(pos) ?? 0;
-        setStatusMsg(`Lat: ${pos.latitude.toFixed(3)} Lon: ${pos.longitude.toFixed(3)} Elev: ${Math.round(elev)}m`);
-        camera.position.setY(elev + 2);
-        if (newData.length > 0) {
-            setLoadingMsg("Rendering data...");
-            const pois = new Array<Poi>(),
-                ways = new Array<Way>(),
-                terrains = new Array<THREE.Mesh>();
 
-            const poisForRouting: FeatureCollection<Point> = {
-                "type": "FeatureCollection",
-                "features": new Array<Poi>()
-            }, waysForRouting: FeatureCollection<LineString> = {
-                "type": "FeatureCollection",
-                "features": new Array<Way>()
-            };
+                            const accessibleHighway = hwy && hwy.indexOf("motorway") == -1 && noAccess.indexOf(props.access) == -1 && noAccess.indexOf(props.foot) == -1;
+                            switch (feature.geometry.type) {
+                                case "Point":
 
-            for (let dataTile of newData) {
-                const tileKey = dataTile.tile.getIndex();
-                const newDem = getDataForTile(tileKey);
-                if (newDem) {
-                    const terrainGenerator = new TerrainGenerator(newDem);
-                    const terrain = terrainGenerator.genTerrain(locar!);
-                    terrain.userData["tileKey"] = tileKey;
-                    terrain.renderOrder = -1;
-                    (terrain.material as THREE.MeshStandardMaterial).colorWrite = false;
-                    terrains.push(terrain);
-                }
-                for (let feature of (dataTile.data as FeatureCollection).features) {
-                    feature.properties ??= {};
-                    const props = feature.properties;
-                    const hikar_id = props.hikar_id ?? 0;
-                    if (!indexedFeatures[hikar_id]) {
+                                    feature.properties.hikar_id = `poi-${props.osm_id}`;
+                                    const poiForRendering = structuredClone(feature) as Poi;
+                                    poiForRendering.properties!.type = props.building !== undefined ? "building" : props.place || props.natural || props.amenity;
+                                    pois.push(poiForRendering);
+                                    if (props.name) {
+                                        const routablePoi = structuredClone(feature) as RoutablePoi;
 
-                        const hwy = feature.properties?.highway;
+                                        routablePoi.dist = Number.MAX_VALUE;
+                                        routablePoi.bearing = 720;
+                                        routablePoi.path = [];
+                                        routablePoi.weight = 0.0;
+                                        routablePoi.split = null;
 
-
-
-                        const accessibleHighway = hwy && hwy.indexOf("motorway") == -1 && noAccess.indexOf(props.access) == -1 && noAccess.indexOf(props.foot) == -1;
-                        switch (feature.geometry.type) {
-                            case "Point":
-
-                                feature.properties.hikar_id = `poi-${props.osm_id}`;
-                                const poiForRendering = structuredClone(feature) as Poi;
-                                poiForRendering.properties!.type = props.building !== undefined ? "building" : props.place || props.natural || props.amenity;
-                                pois.push(poiForRendering);
-                                if (props.name) {
-                                    const routablePoi = structuredClone(feature) as RoutablePoi;
-
-                                    routablePoi.dist = Number.MAX_VALUE;
-                                    routablePoi.bearing = 720;
-                                    routablePoi.path = [];
-                                    routablePoi.weight = 0.0;
-                                    routablePoi.split = null;
-
-                                    poisForRouting.features.push(routablePoi);
-                                    addRoutablePoi(routablePoi);
-                                }
-                                break;
-                            case "LineString":
-                                feature.properties.hikar_id = `way-${dataTile.tile.toString()}:w${feature.properties!.osm_id}`;
-                                if (accessibleHighway) {
-                                    feature.properties.type = feature.properties?.designation || feature.properties?.highway;
-                                    const filteredCoords = feature.geometry.coordinates.filter(coord => coord[2] !== undefined);
-
-                                    if (filteredCoords.length >= 2) {
-                                        ways.push({
-                                            type: "Feature",
-                                            geometry: {
-                                                "type": "LineString",
-                                                coordinates: filteredCoords
-                                            },
-                                            properties: { ...feature.properties, type: feature.properties?.designation || feature.properties?.highway }
-                                        });
-                                        const routableWay = structuredClone(feature) as RoutableWay;
-                                        routableWay.boundingBox = BoundingBox.fromCoords(routableWay.geometry.coordinates);
-                                        waysForRouting.features.push(routableWay);
+                                        poisForRouting.features.push(routablePoi);
+                                        addRoutablePoi(routablePoi);
                                     }
-                                }
-                                break;
-                            case "MultiLineString":
-                                if (accessibleHighway) {
-                                    const baseId = `${dataTile.tile.toString()}:w${feature.properties!.osm_id}`;
-
-                                    const mlsCoords = (feature.geometry as MultiLineString).coordinates;
-                                    let i = 0;
-                                    for (let lineCoords of mlsCoords) {
-                                        const filteredCoords = lineCoords.filter(coords => coords[2] !== undefined);
-
+                                    break;
+                                case "LineString":
+                                    feature.properties.hikar_id = `way-${dataTile.tile.toString()}:w${feature.properties!.osm_id}`;
+                                    if (accessibleHighway) {
+                                        feature.properties.type = feature.properties?.designation || feature.properties?.highway;
+                                        const filteredCoords = feature.geometry.coordinates.filter(coord => coord[2] !== undefined);
 
                                         if (filteredCoords.length >= 2) {
-                                            const splitWay: Way = {
+                                            ways.push({
                                                 type: "Feature",
                                                 geometry: {
                                                     "type": "LineString",
                                                     coordinates: filteredCoords
                                                 },
-                                                properties: { ...feature.properties, type: feature.properties?.designation || feature.properties?.highway } as GeoJsonProperties
-                                            };
-                                            splitWay.properties!.hikar_id = `way-${baseId}#${i++}`;
-                                            ways.push(splitWay);
-                                            const routableWay = structuredClone(splitWay) as RoutableWay;
+                                                properties: { ...feature.properties, type: feature.properties?.designation || feature.properties?.highway }
+                                            });
+                                            const routableWay = structuredClone(feature) as RoutableWay;
                                             routableWay.boundingBox = BoundingBox.fromCoords(routableWay.geometry.coordinates);
                                             waysForRouting.features.push(routableWay);
                                         }
                                     }
-                                }
-                                break;
+                                    break;
+                                case "MultiLineString":
+                                    if (accessibleHighway) {
+                                        const baseId = `${dataTile.tile.toString()}:w${feature.properties!.osm_id}`;
+
+                                        const mlsCoords = (feature.geometry as MultiLineString).coordinates;
+                                        let i = 0;
+                                        for (let lineCoords of mlsCoords) {
+                                            const filteredCoords = lineCoords.filter(coords => coords[2] !== undefined);
+
+
+                                            if (filteredCoords.length >= 2) {
+                                                const splitWay: Way = {
+                                                    type: "Feature",
+                                                    geometry: {
+                                                        "type": "LineString",
+                                                        coordinates: filteredCoords
+                                                    },
+                                                    properties: { ...feature.properties, type: feature.properties?.designation || feature.properties?.highway } as GeoJsonProperties
+                                                };
+                                                splitWay.properties!.hikar_id = `way-${baseId}#${i++}`;
+                                                ways.push(splitWay);
+                                                const routableWay = structuredClone(splitWay) as RoutableWay;
+                                                routableWay.boundingBox = BoundingBox.fromCoords(routableWay.geometry.coordinates);
+                                                waysForRouting.features.push(routableWay);
+                                            }
+                                        }
+                                    }
+                                    break;
+                            }
+                            addIndexedFeature(feature.properties!.hikar_id, feature);
                         }
-                        addIndexedFeature(feature.properties!.hikar_id, feature);
                     }
                 }
+                setLoadingMsg("Updating routing...");
+                updateRoutingNetwork(waysForRouting, poisForRouting);
+                console.log(`Adding ${ways.length} ways, ${pois.length} pois and ${terrains.length} terrains to the geodata`);
+                addGeoData(ways, pois, terrains);
+            } else {
+                isLoadingData.current = false;
+                console.log('No new data, unlocking data download and checking for signpost at: ', pos);
+                try {
+                    setLoadingMsg('Checking for signposts...');
+                    findSignpostAtLonLat(pos);
+                } catch (e: any) {
+                    console.error('Exception finding signpost!');
+                    console.error(e);
+                }
             }
-            setLoadingMsg("Updating routing...");
-            updateRoutingNetwork(waysForRouting, poisForRouting);
-            addGeoData(ways, pois, terrains);
         } else {
-            setLoadingMsg("Checking for signposts...");
-            findSignpostAtLonLat(pos);
+            console.log("Currently loading data - not doing anything for now");
         }
-
-
     }
+
     function printSignpost(signpost: Signpost) {
         console.log('*** SIGNPOST:');
         Object.keys(signpost.arms).forEach(bearing => {

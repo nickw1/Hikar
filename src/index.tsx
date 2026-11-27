@@ -11,6 +11,10 @@ const root = ReactDOM.createRoot(
 	document.getElementById('root')!
 );
 
-const testMode = params.get('t') || null;
+const testMode = params.get('t') ||  null;
+
+if(params.get('e')) {
+	import('eruda').then(eruda => eruda.default.init());
+}
 
 root.render(<App fakeLat={testMode ? START_POS.lat : params.get('lat')} fakeLon={testMode ? START_POS.lon : params.get('lon')} />);

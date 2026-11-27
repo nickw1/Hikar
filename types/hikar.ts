@@ -136,3 +136,8 @@ export interface AppParams {
     fakeLon?: string | null;
     fakeLat?: string | null;
 }
+
+export interface SignpostWithErrorInfo { 
+    signpost: Signpost | null;
+    reasonForNull?: string;
+}

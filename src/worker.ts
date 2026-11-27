@@ -1,7 +1,7 @@
 import SignpostManager from './SignpostManager';
 import RoutingNetwork from './RoutingNetwork';
-import type { RoutableWay } from '../types/hikar';
 
+import type { RoutableWay } from '../types/hikar';
 
 
 let sMgr: SignpostManager | null = null, routingNetwork: RoutingNetwork | null = null;
@@ -12,8 +12,10 @@ onmessage = e => {
         case 'updateData':
           
             if (routingNetwork !== null) {
-                routingNetwork.update(e.data.data.ways, e.data.data.pois);
-                postMessage({ type: 'dataUpdated' });
+                const data = routingNetwork.update(e.data.data.ways, e.data.data.pois); 
+                postMessage({ type: 'dataUpdated', data });
+            } else {
+                console.warn('worker: updateData: routingNetwork is null');
             }
             break;
 
@@ -22,7 +24,8 @@ onmessage = e => {
             if (sMgr !== null) {
                 const sign = sMgr.updatePos(e.data.data);
                 postMessage({ type: 'checkJunctionFinished', data: sign });
-            }
+            } 
+            console.warn('worker: checkJunction: signpost manager is null');
             break;
 
         case 'createObjects':
